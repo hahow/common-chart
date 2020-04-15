@@ -1,0 +1,12 @@
+{{/* vim: set filetype=mustache: */}}
+
+{{- define "common.configMap.tpl" -}}
+apiVersion: v1
+kind: ConfigMap
+{{ include "common.metadata" . }}
+data: {}
+{{- end -}}
+
+{{- define "common.configMap" -}}
+{{- include "common.utils.flattenCall" (list "common.utils.merge" . "common.configMap.tpl") -}}
+{{- end -}}
