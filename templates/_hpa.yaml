@@ -1,0 +1,43 @@
+{{/* vim: set filetype=mustache: */}}
+
+{{- define "common.hpa.tpl" -}}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+{{ include "common.metadata" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "common.fullname" . }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+  {{- with .Values.autoscaling.cpuUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+  {{- end }}
+  {{- with .Values.autoscaling.memoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+  {{- end -}}
+{{- end -}}
+
+{{- define "common.hpa.if" -}}
+{{- $top := first . -}}
+{{- $autoscaling := $top.Values.autoscaling | default (dict) -}}
+{{- if $autoscaling.enabled -}}
+  {{- include "common.utils.merge" (append . "common.hpa.tpl") -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "common.hpa" -}}
+{{- include "common.utils.flattenCall" (list "common.hpa.if" .) -}}
+{{- end -}}
