@@ -1,0 +1,34 @@
+{{/* vim: set filetype=mustache: */}}
+
+{{- define "common.pdb.tpl" -}}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+{{ include "common.metadata" . }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  {{- with .Values.podDisruptionBudget }}
+  {{- if not (or (empty .minAvailable) (empty .maxUnavailable)) -}}
+    {{- fail "podDisruptionBudget.minAvailable and podDisruptionBudget.maxUnavailable can not be set together" }}
+  {{- end -}}
+  {{- with .minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- end }}
+{{- end -}}
+
+{{- define "common.pdb.if" -}}
+{{- $top := first . -}}
+{{- $autoscaling := $top.Values.autoscaling | default (dict) -}}
+{{- if or (and $autoscaling.enabled (gt ($autoscaling.minReplicas | int) 1)) (gt ($top.Values.replicaCount | int) 1) }}
+  {{- include "common.utils.merge" (append . "common.pdb.tpl") -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "common.pdb" -}}
+{{- include "common.utils.flattenCall" (list "common.pdb.if" .) -}}
+{{- end -}}
