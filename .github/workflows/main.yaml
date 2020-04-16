@@ -1,0 +1,45 @@
+name: Build
+
+on: [push]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm plugin install https://github.com/hayorov/helm-gcs
+      - name: Lint chart
+        run: |
+          helm lint .
+
+  release:
+    needs: lint
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm plugin install https://github.com/hayorov/helm-gcs
+      - name: Dump GCloud auth key
+        run: |
+          cat <<'EOF' > gcloud_auth_key.json
+          ${{ secrets.GCLOUD_AUTH_KEY }}
+          EOF
+      - name: Release chart
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcloud_auth_key.json
+        run: |
+          helm repo add hahow gs://hahow-helm-charts
+          helm repo update
+          PACKAGE_FILE_PATH=$(helm package . | sed 's/^Successfully packaged chart and saved it to: //')
+          helm gcs push $(basename ${PACKAGE_FILE_PATH}) hahow --public
