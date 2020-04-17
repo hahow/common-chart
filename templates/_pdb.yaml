@@ -3,7 +3,8 @@
 {{- define "common.pdb.tpl" -}}
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
-{{ include "common.metadata" . }}
+metadata:
+  {{ include "common.metadata" . | nindent 2 }}
 spec:
   selector:
     matchLabels:

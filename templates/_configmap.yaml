@@ -3,7 +3,8 @@
 {{- define "common.configMap.tpl" -}}
 apiVersion: v1
 kind: ConfigMap
-{{ include "common.metadata" . }}
+metadata:
+  {{ include "common.metadata" . | nindent 2 }}
 data: {}
 {{- end -}}
 

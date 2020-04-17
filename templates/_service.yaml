@@ -3,7 +3,8 @@
 {{- define "common.service.tpl" -}}
 apiVersion: v1
 kind: Service
-{{ include "common.metadata" . }}
+metadata:
+  {{ include "common.metadata" . | nindent 2 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

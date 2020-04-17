@@ -3,7 +3,8 @@
 {{- define "common.hpa.tpl" -}}
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
-{{ include "common.metadata" . }}
+metadata:
+  {{ include "common.metadata" . | nindent 2 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

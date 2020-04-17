@@ -1,5 +1,12 @@
 {{/* vim: set filetype=mustache: */}}
 
+{{- define "common.ingress.metadata" -}}
+{{- with .Values.ingress.annotations }}
+annotations:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end -}}
+
 {{- define "common.ingress.tpl" -}}
 {{- $fullName := include "common.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
@@ -9,11 +16,8 @@ apiVersion: networking.k8s.io/v1beta1
 apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
-{{ include "common.metadata" . }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+metadata:
+  {{ include "common.metadata" (list . "common.ingress.metadata") | nindent 2 }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:

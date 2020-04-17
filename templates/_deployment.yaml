@@ -4,7 +4,8 @@
 {{- $autoscaling := .Values.autoscaling | default (dict) -}}
 apiVersion: apps/v1
 kind: Deployment
-{{ include "common.metadata" . }}
+metadata:
+  {{ include "common.metadata" . | nindent 2 }}
 spec:
   {{- if not $autoscaling.enabled }}
   replicas: {{ .Values.replicaCount | default 1 }}
