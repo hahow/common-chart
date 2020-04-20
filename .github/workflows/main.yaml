@@ -32,7 +32,7 @@ jobs:
           helm plugin install https://github.com/hayorov/helm-gcs
       - name: Dump GCloud auth key
         run: |
-          cat <<'EOF' > .secrets/gcloud_auth_key.json
+          cat <<'EOF' > gcloud_auth_key.json
           ${{ secrets.GCLOUD_AUTH_KEY }}
           EOF
       - name: Release chart

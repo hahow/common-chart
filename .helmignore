@@ -22,4 +22,4 @@
 *.tmproj
 .vscode/
 # Secrets
-.secrets/
+gcloud_auth_key.json
