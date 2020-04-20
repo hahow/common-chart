@@ -1,0 +1,34 @@
+{{/* vim: set filetype=mustache: */}}
+
+{{- define "common.cronJob.pod" -}}
+spec:
+  restartPolicy: OnFailure
+{{- end -}}
+
+{{- define "common.cronJob.tpl" -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  {{ include "common.metadata" . | nindent 2 }}
+spec:
+  schedule: "{{ .Values.cronJob.schedule }}"
+  {{- with .Values.cronJob.concurrencyPolicy }}
+  concurrencyPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.cronJob.failedJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ . }}
+  {{- end }}
+  {{- with .Values.cronJob.successfulJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ . }}
+  {{- end }}
+  jobTemplate:
+    metadata:
+      {{ include "common.metadata" . | nindent 6 }}
+    spec:
+      template:
+        {{ include "common.pod-template" (list . "common.cronJob.pod") | nindent 8 }}
+{{- end -}}
+
+{{- define "common.cronJob" -}}
+{{- include "common.utils.flattenCall" (list "common.utils.merge" . "common.cronJob.tpl") -}}
+{{- end -}}
