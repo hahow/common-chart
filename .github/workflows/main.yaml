@@ -37,7 +37,7 @@ jobs:
           EOF
       - name: Release chart
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.secrets/gcloud_auth_key.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcloud_auth_key.json
         run: |
           helm repo add hahow gs://hahow-helm-charts
           helm repo update
