@@ -1,0 +1,55 @@
+{{/* vim: set filetype=mustache: */}}
+
+{{- define "common.serviceMonitor.metadata" -}}
+{{- with .Values.serviceMonitor.namespace }}
+namespace: {{ . }}
+{{- end }}
+{{- end -}}
+
+{{- define "common.serviceMonitor.tpl" -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  {{ include "common.metadata" (list . "common.serviceMonitor.metadata") | nindent 2 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace | quote }}
+  endpoints:
+  - port: {{ .Values.serviceMonitor.port | default .Values.service.port }}
+    {{- with .Values.serviceMonitor.path }}
+    path: {{ . }}
+    {{- end }}
+    {{- with .Values.serviceMonitor.interval }}
+    interval: {{ . }}
+    {{- end }}
+    {{- with .Values.serviceMonitor.scrapeTimeout }}
+    scrapeTimeout: {{ . }}
+    {{- end }}
+    {{- $basicAuth := .Values.serviceMonitor.basicAuth | default (dict) -}}
+    {{- $name := $basicAuth.secretName | default (include "common.fullname" .) -}}
+    {{- if $basicAuth.enabled }}
+    basicAuth:
+      username:
+        name: {{ $name }}
+        key: {{ $basicAuth.usernameKey | default "username" }}
+      password:
+        name: {{ $name }}
+        key: {{ $basicAuth.passwordKey | default "password" }}
+    {{- end }}
+{{- end -}}
+
+{{- define "common.serviceMonitor.if" -}}
+{{- $top := first . -}}
+{{- $serviceMonitor := $top.Values.serviceMonitor | default (dict) -}}
+{{- if $serviceMonitor.enabled -}}
+  {{- include "common.utils.merge" (append . "common.serviceMonitor.tpl") -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "common.serviceMonitor" -}}
+{{- include "common.utils.flattenCall" (list "common.serviceMonitor.if" .) -}}
+{{- end -}}
