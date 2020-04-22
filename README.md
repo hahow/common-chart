@@ -44,6 +44,51 @@ Each implemented base resource is described in greater detail below.
 
 
 
+### `common.deployment`
+
+The `common.deployment` template accepts a list of three values:
+
+- the top context
+- `$deployment`, a dictionary of values used in the deployment template
+- `$autoscaling`, a dictionary of values used in the hpa template
+- [optional] the template name of the overrides
+
+It defines a basic `Deployment` with the following settings:
+
+| Value | Description |
+| ----- | ----------- |
+| `$deployment.replicaCount` | Number of replica. If autoscaling enabled, this field will be ignored |
+| `$deployment.imagePullSecrets` | [optional] Name of Secret resource containing private registry credentials |
+| `$deployment.podSecurityContext` | [optional] Security options for pod |
+| `$deployment.nodeSelector` | [optional] Node labels for pod assignment |
+| `$deployment.affinity` | [optional] Expressions for affinity |
+| `$deployment.tolerations` | [optional] Toleration labels for pod assignment |
+| `$autoscaling.enabled` | [optional] Set this to `true` to enable autoscaling |
+
+Underneath the hood, it uses [`common.container`](#commoncontainer).
+
+By default, the pod template within the deployment defines the labels 
+
+```yaml
+app.kubernetes.io/name: {{ template "common.name" }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+```
+
+as this is also used as the selector. The standard set of labels are not used as some of these can change during upgrades, which causes the replica sets and pods to not correctly match.
+
+Example use:
+
+```yaml
+{{- template "common.deployment" (list . .Values .Values.autoscaling) -}}
+
+## The following is the same as above:
+# {{- template "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
+# {{- define "mychart.deployment" -}}
+# {{- end -}}
+```
+
+
+
 ### `common.service`
 
 The `common.service` template accepts a list of three values:
