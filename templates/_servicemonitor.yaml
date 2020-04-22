@@ -1,36 +1,39 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.serviceMonitor.metadata" -}}
-{{- with .Values.serviceMonitor.namespace }}
+{{- $serviceMonitor := index . 1 -}}
+{{- with $serviceMonitor.namespace }}
 namespace: {{ . }}
 {{- end }}
 {{- end -}}
 
 {{- define "common.serviceMonitor.tpl" -}}
+{{- $top := first . -}}
+{{- $serviceMonitor := index . 1 -}}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  {{ include "common.metadata" (list . "common.serviceMonitor.metadata") | nindent 2 }}
+  {{ include "common.metadata" (append . "common.serviceMonitor.metadata") | nindent 2 }}
 spec:
   selector:
     matchLabels:
-      {{- include "common.selectorLabels" . | nindent 6 }}
+      {{- include "common.selectorLabels" $top | nindent 6 }}
   namespaceSelector:
     matchNames:
-    - {{ .Release.Namespace | quote }}
+    - {{ $top.Release.Namespace | quote }}
   endpoints:
-  - port: {{ .Values.serviceMonitor.port | default .Values.service.port }}
-    {{- with .Values.serviceMonitor.path }}
+  - port: {{ $serviceMonitor.port }}
+    {{- with $serviceMonitor.path }}
     path: {{ . }}
     {{- end }}
-    {{- with .Values.serviceMonitor.interval }}
+    {{- with $serviceMonitor.interval }}
     interval: {{ . }}
     {{- end }}
-    {{- with .Values.serviceMonitor.scrapeTimeout }}
+    {{- with $serviceMonitor.scrapeTimeout }}
     scrapeTimeout: {{ . }}
     {{- end }}
-    {{- $basicAuth := .Values.serviceMonitor.basicAuth | default (dict) -}}
-    {{- $name := $basicAuth.secretName | default (include "common.fullname" .) -}}
+    {{- $basicAuth := $serviceMonitor.basicAuth | default (dict) -}}
+    {{- $name := $basicAuth.secretName | default (include "common.fullname" $top) -}}
     {{- if $basicAuth.enabled }}
     basicAuth:
       username:
@@ -42,14 +45,10 @@ spec:
     {{- end }}
 {{- end -}}
 
-{{- define "common.serviceMonitor.if" -}}
+{{- define "common.serviceMonitor" -}}
 {{- $top := first . -}}
-{{- $serviceMonitor := $top.Values.serviceMonitor | default (dict) -}}
+{{- $serviceMonitor := index . 1 -}}
 {{- if $serviceMonitor.enabled -}}
   {{- include "common.utils.merge" (append . "common.serviceMonitor.tpl") -}}
 {{- end -}}
-{{- end -}}
-
-{{- define "common.serviceMonitor" -}}
-{{- include "common.utils.flattenCall" (list "common.serviceMonitor.if" .) -}}
 {{- end -}}

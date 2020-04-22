@@ -6,29 +6,32 @@ spec:
 {{- end -}}
 
 {{- define "common.cronJob.tpl" -}}
+{{- $top := first . -}}
+{{- $cronJob := index . 1 -}}
+{{- $pod := index . 2 -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  {{ include "common.metadata" . | nindent 2 }}
+  {{ include "common.metadata" (list $top) | nindent 2 }}
 spec:
-  schedule: "{{ .Values.cronJob.schedule }}"
-  {{- with .Values.cronJob.concurrencyPolicy }}
+  schedule: "{{ $cronJob.schedule }}"
+  {{- with $cronJob.concurrencyPolicy }}
   concurrencyPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.cronJob.failedJobsHistoryLimit }}
+  {{- with $cronJob.failedJobsHistoryLimit }}
   failedJobsHistoryLimit: {{ . }}
   {{- end }}
-  {{- with .Values.cronJob.successfulJobsHistoryLimit }}
+  {{- with $cronJob.successfulJobsHistoryLimit }}
   successfulJobsHistoryLimit: {{ . }}
   {{- end }}
   jobTemplate:
     metadata:
-      {{ include "common.metadata" . | nindent 6 }}
+      {{ include "common.metadata" (list $top) | nindent 6 }}
     spec:
       template:
-        {{ include "common.pod-template" (list . "common.cronJob.pod") | nindent 8 }}
+        {{ include "common.pod-template" (list $top $pod "common.cronJob.pod") | nindent 8 }}
 {{- end -}}
 
 {{- define "common.cronJob" -}}
-{{- include "common.utils.flattenCall" (list "common.utils.merge" . "common.cronJob.tpl") -}}
+{{- include "common.utils.merge" (append . "common.cronJob.tpl") -}}
 {{- end -}}

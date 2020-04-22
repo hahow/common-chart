@@ -21,14 +21,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{ define "common.metadata.tpl" -}}
-name: {{ include "common.fullname" . }}
+{{- $top := first . -}}
+name: {{ include "common.fullname" $top }}
 labels:
-  {{- include "common.labels" . | nindent 2 -}}
+  {{- include "common.labels" $top | nindent 2 -}}
 {{- end -}}
 
 {{- /*
 Create a standard metadata header
 */ -}}
 {{ define "common.metadata" -}}
-{{- include "common.utils.flattenCall" (list "common.utils.merge" . "common.metadata.tpl") -}}
+{{- include "common.utils.merge" (append . "common.metadata.tpl") -}}
 {{- end -}}

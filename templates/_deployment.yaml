@@ -1,22 +1,24 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.deployment.tpl" -}}
-{{- $autoscaling := .Values.autoscaling | default (dict) -}}
+{{- $top := first . -}}
+{{- $deployment := index . 1 -}}
+{{- $autoscaling := index . 2 -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  {{ include "common.metadata" . | nindent 2 }}
+  {{ include "common.metadata" (list $top) | nindent 2 }}
 spec:
   {{- if not $autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount | default 1 }}
+  replicas: {{ $deployment.replicaCount | default 1 }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "common.selectorLabels" . | nindent 6 }}
+      {{ include "common.selectorLabels" $top | nindent 6 }}
   template:
-    {{- include "common.pod-template" . | nindent 4 }}
+    {{ include "common.pod-template" . | nindent 4 }}
 {{- end -}}
 
 {{- define "common.deployment" -}}
-{{- include "common.utils.flattenCall" (list "common.utils.merge" . "common.deployment.tpl") -}}
+{{- include "common.utils.merge" (append . "common.deployment.tpl") -}}
 {{- end -}}

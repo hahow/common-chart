@@ -1,27 +1,31 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.ingress.metadata" -}}
-{{- with .Values.ingress.annotations }}
+{{- $ingress := index . 1 -}}
+{{- with $ingress.annotations }}
 annotations:
   {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- end -}}
 
 {{- define "common.ingress.tpl" -}}
-{{- $fullName := include "common.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- $top := first . -}}
+{{- $ingress := index . 1 -}}
+{{- $service := index . 2 -}}
+{{- $fullName := include "common.fullname" $top -}}
+{{- $svcPort := $service.port -}}
+{{- if semverCompare ">=1.14-0" $top.Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
 apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  {{ include "common.metadata" (list . "common.ingress.metadata") | nindent 2 }}
+  {{ include "common.metadata" (append . "common.ingress.metadata") | nindent 2 }}
 spec:
-{{- if .Values.ingress.tls }}
+{{- if $ingress.tls }}
   tls:
-  {{- range .Values.ingress.tls }}
+  {{- range $ingress.tls }}
     - hosts:
       {{- range .hosts }}
         - {{ . | quote }}
@@ -30,7 +34,7 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
+  {{- range $ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
@@ -43,13 +47,9 @@ spec:
   {{- end }}
 {{- end -}}
 
-{{- define "common.ingress.if" -}}
-{{- $top := first . -}}
-{{- if $top.Values.ingress.enabled -}}
+{{- define "common.ingress" -}}
+{{- $ingress := index . 1 -}}
+{{- if $ingress.enabled -}}
   {{- include "common.utils.merge" (append . "common.ingress.tpl") -}}
 {{- end -}}
-{{- end -}}
-
-{{- define "common.ingress" -}}
-{{- include "common.utils.flattenCall" (list "common.ingress.if" .) -}}
 {{- end -}}
