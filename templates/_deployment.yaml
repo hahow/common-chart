@@ -1,45 +1,24 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.deployment.tpl" -}}
-{{- $autoscaling := .Values.autoscaling | default (dict) -}}
+{{- $top := first . -}}
+{{- $deployment := index . 1 -}}
+{{- $autoscaling := index . 2 -}}
 apiVersion: apps/v1
 kind: Deployment
-{{ include "common.metadata" . }}
+metadata:
+  {{ include "common.metadata" (list $top) | nindent 2 }}
 spec:
   {{- if not $autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount | default 1 }}
+  replicas: {{ $deployment.replicaCount | default 1 }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "common.selectorLabels" . | nindent 6 }}
+      {{ include "common.selectorLabels" $top | nindent 6 }}
   template:
-    metadata:
-      labels:
-        {{- include "common.selectorLabels" . | nindent 8 }}
-    spec:
-    {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
-      serviceAccountName: {{ include "common.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      containers:
-        - {{- include "common.container" . | nindent 10 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
+    {{ include "common.pod.template" . | nindent 4 }}
 {{- end -}}
 
 {{- define "common.deployment" -}}
-{{- include "common.utils.flattenCall" (list "common.utils.merge" . "common.deployment.tpl") -}}
+{{- include "common.utils.merge" (append . "common.deployment.tpl") -}}
 {{- end -}}

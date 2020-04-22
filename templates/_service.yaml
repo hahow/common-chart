@@ -1,20 +1,23 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.service.tpl" -}}
+{{- $top := first . -}}
+{{- $service := index . 1 -}}
 apiVersion: v1
 kind: Service
-{{ include "common.metadata" . }}
+metadata:
+  {{ include "common.metadata" (list $top) | nindent 2 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ $service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ $service.port }}
       targetPort: http
       protocol: TCP
       name: http
   selector:
-    {{- include "common.selectorLabels" . | nindent 4 }}
+    {{- include "common.selectorLabels" $top | nindent 4 }}
 {{- end -}}
 
 {{- define "common.service" -}}
-{{- include "common.utils.flattenCall" (list "common.utils.merge" . "common.service.tpl") -}}
+{{- include "common.utils.merge" (append . "common.service.tpl") -}}
 {{- end -}}

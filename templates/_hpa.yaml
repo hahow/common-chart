@@ -1,18 +1,21 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.hpa.tpl" -}}
+{{- $top := first . -}}
+{{- $autoscaling := index . 1 -}}
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
-{{ include "common.metadata" . }}
+metadata:
+  {{ include "common.metadata" (list $top) | nindent 2 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "common.fullname" . }}
-  minReplicas: {{ .Values.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+    name: {{ include "common.fullname" $top }}
+  minReplicas: {{ $autoscaling.minReplicas }}
+  maxReplicas: {{ $autoscaling.maxReplicas }}
   metrics:
-  {{- with .Values.autoscaling.cpuUtilizationPercentage }}
+  {{- with $autoscaling.cpuUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu
@@ -20,7 +23,7 @@ spec:
           type: Utilization
           averageUtilization: {{ . }}
   {{- end }}
-  {{- with .Values.autoscaling.memoryUtilizationPercentage }}
+  {{- with $autoscaling.memoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
@@ -30,14 +33,9 @@ spec:
   {{- end -}}
 {{- end -}}
 
-{{- define "common.hpa.if" -}}
-{{- $top := first . -}}
-{{- $autoscaling := $top.Values.autoscaling | default (dict) -}}
+{{- define "common.hpa" -}}
+{{- $autoscaling := index . 1 -}}
 {{- if $autoscaling.enabled -}}
   {{- include "common.utils.merge" (append . "common.hpa.tpl") -}}
 {{- end -}}
-{{- end -}}
-
-{{- define "common.hpa" -}}
-{{- include "common.utils.flattenCall" (list "common.hpa.if" .) -}}
 {{- end -}}
