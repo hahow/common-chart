@@ -6,11 +6,11 @@
 {{- $image := $container.image | default (dict) -}}
 name: {{ $top.Chart.Name }}
 securityContext:
-  {{- toYaml $container.securityContext | nindent 4 }}
+  {{- toYaml $container.securityContext | nindent 2 }}
 image: "{{ $image.repository }}:{{ $image.tag | default $top.Chart.AppVersion }}"
 imagePullPolicy: {{ $container.image.pullPolicy }}
 resources:
-  {{- toYaml $container.resources | nindent 4 }}
+  {{- toYaml $container.resources | nindent 2 }}
 {{- end -}}
 
 {{- define "common.container" -}}
