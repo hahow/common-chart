@@ -102,12 +102,10 @@ It creates a basic `Service` resource with the following defaults:
 - Service type (ClusterIP, NodePort, LoadBalancer) made configurable by `$service.type`
 - Named port `http` configured on port `$service.port`
 - Selector set to
-
   ```yaml
   app.kubernetes.io/name: {{ template "common.name" }}
   app.kubernetes.io/instance: {{ .Release.Name }}
   ```
-
   to match the default used in the `Deployment` resource
 
 Example template:
@@ -199,4 +197,146 @@ spec:
     app.kubernetes.io/name: mychart
     protocol: mail
   type: ClusterIP
+```
+
+
+
+## Partial Objects
+
+When writing Kubernetes resources, you may find the following helpers useful to construct parts of the spec.
+
+
+
+### `common.container`
+
+The `common.container` template accepts a list of three values:
+
+- the top context
+- `$container`, a dictionary of values used in the container template
+- [optional] the template name of the overrides
+
+It creates a basic `Container` spec to be used within a `Deployment` or `CronJob`. It holds the following defaults:
+
+- The name is set to the chart name
+- Uses `$container.image` to describe the image to run, with the following spec:
+  ```yaml
+  image:
+    repository: nginx
+    tag: stable
+    pullPolicy: IfNotPresent
+  ```
+- Lays out the security options using `$container.securityContext`
+- Lays out the compute resources using `$container.resources`
+
+Example use:
+
+```yaml
+{{- template "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
+{{- define "mychart.deployment" -}}
+## Define overrides for your Deployment resource here, e.g.
+spec:
+  template:
+    spec:
+      containers:
+        - {{- include "common.container" (append . "mychart.deployment.container") | nindent 10 }}
+{{- end -}}
+{{- define "mychart.deployment.container" -}}
+## Define overrides for your Container here, e.g.
+ports:
+  - name: http
+    containerPort: 80
+    protocol: TCP
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+{{- end -}}
+```
+
+The above example creates a `Deployment` resource which makes use of the `common.container` template to populate the PodSpec's container list. The usage of this template is similar to the other resources, you must define and reference a template that contains overrides for the container object.
+
+The most important part of a container definition is the image you want to run. As mentioned above, this is derived from `$container.image` by default. It is a best practice to define the image, tag and pull policy in your charts' values as this makes it easy for an operator to change the image registry, or use a specific tag or version. Another example of configuration that should be exposed to chart operators is the container's required compute resources, as this is also very specific to an operators environment. An example `values.yaml` for your chart could look like:
+
+```yaml
+replicaCount: 1
+image:
+  repository: nginx
+  tag: stable
+  pullPolicy: IfNotPresent
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+```
+
+The output of running the above values through the earlier template is:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: mychart
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/name: mychart
+    spec:
+      containers:
+      - image: nginx:stable
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        name: mychart
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+      serviceAccountName: release-name-mychart
 ```
