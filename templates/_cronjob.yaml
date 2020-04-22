@@ -26,7 +26,8 @@ spec:
   {{- end }}
   jobTemplate:
     metadata:
-      {{ include "common.metadata" (list $top) | nindent 6 }}
+      labels:
+        {{ include "common.selectorLabels" $top | nindent 8 }}
     spec:
       template:
         {{ include "common.pod-template" (list $top $pod "common.cronJob.pod") | nindent 8 }}
