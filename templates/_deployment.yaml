@@ -7,16 +7,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  {{ include "common.metadata" (list $top) | nindent 2 }}
+  {{- include "common.metadata" (list $top) | nindent 2 }}
 spec:
   {{- if not $autoscaling.enabled }}
   replicas: {{ $deployment.replicaCount | default 1 }}
   {{- end }}
   selector:
     matchLabels:
-      {{ include "common.selectorLabels" $top | nindent 6 }}
+      {{- include "common.selectorLabels" $top | nindent 6 }}
   template:
-    {{ include "common.pod.template" . | nindent 4 }}
+    {{- include "common.pod.template" . | nindent 4 }}
 {{- end -}}
 
 {{- define "common.deployment" -}}

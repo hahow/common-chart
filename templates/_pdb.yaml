@@ -6,7 +6,7 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  {{ include "common.metadata" (list $top) | nindent 2 }}
+  {{- include "common.metadata" (list $top) | nindent 2 }}
 spec:
   selector:
     matchLabels:
