@@ -16,7 +16,7 @@ spec:
     matchLabels:
       {{ include "common.selectorLabels" $top | nindent 6 }}
   template:
-    {{ include "common.pod-template" . | nindent 4 }}
+    {{ include "common.pod.template" . | nindent 4 }}
 {{- end -}}
 
 {{- define "common.deployment" -}}

@@ -1,6 +1,6 @@
 {{/* vim: set filetype=mustache: */}}
 
-{{- define "common.pod-template.tpl" -}}
+{{- define "common.pod.template.tpl" -}}
 {{- $top := first . -}}
 {{- $values := index . 1 -}}
 metadata:
@@ -30,6 +30,6 @@ spec:
   {{- end }}
 {{- end -}}
 
-{{- define "common.pod-template" -}}
-{{- include "common.utils.merge" (append . "common.pod-template.tpl") -}}
+{{- define "common.pod.template" -}}
+{{- include "common.utils.merge" (append . "common.pod.template.tpl") -}}
 {{- end -}}
