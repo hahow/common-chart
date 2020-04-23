@@ -21,6 +21,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.serviceMonitor`](#commonservicemonitor)
   * [`common.serviceMonitor.secret`](#commonservicemonitorsecret)
 - [Partial Objects](#partial-objects)
+  * [`common.chart`](#commonchart)
   * [`common.container`](#commoncontainer)
   * [`common.fullname`](#commonfullname)
   * [`common.labels`](#commonlabels)
@@ -728,6 +729,26 @@ type: Opaque
 ## Partial Objects
 
 When writing Kubernetes resources, you may find the following helpers useful to construct parts of the spec.
+
+
+
+### `common.chart`
+
+The `common.chart` helper prints the chart name and version, escaped to be legal in a Kubernetes label field.
+
+Example template:
+
+```yaml
+helm.sh/chart: {{ include "common.chart" . }}
+```
+
+For the chart `foo` with version `1.2.3-beta.55+1234`, this will render:
+
+```yaml
+helm.sh/chart: foo-1.2.3-beta.55_1234
+```
+
+(Note that `+` is an illegal character in label values)
 
 
 
