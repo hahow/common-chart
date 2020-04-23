@@ -29,6 +29,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.name`](#commonname)
   * [`common.pod.template`](#commonpodtemplate)
   * [`common.selectorLabels`](#commonselectorlabels)
+  * [`common.serviceAccountName`](#commonserviceaccountname)
 
 
 
@@ -557,7 +558,7 @@ The `common.serviceAccount` template accepts a list of three values:
 
 It creates a basic `ServiceAccount` resource with the following defaults:
 
-- The name is set with `common.serviceAccountName`
+- The name is set with [`common.serviceAccountName`](#commonserviceaccountname)
 - Lays out the annotations using `$serviceAccount.annotations`
 
 An example values file that can be used to configure the `ServiceAccount` resource is:
@@ -1024,7 +1025,7 @@ The `common.pod.template` template accepts a list of four values:
 It creates a basic `PodTemplate` spec to be used within a `Deployment` or `CronJob`. It holds the following defaults:
 
 - Labels are defined with [`common.selectorLabels`](#commonselectorlabels) as this is also used as the selector.
-- Service account name is set with `common.serviceAccountName`
+- Service account name is set with [`common.serviceAccountName`](#commonserviceaccountname)
 
 It also uses the following configuration from the `$pod`:
 
@@ -1055,4 +1056,48 @@ Example output:
 ```yaml
 app.kubernetes.io/instance: release-name
 app.kubernetes.io/name: mychart
+```
+
+
+
+### `common.serviceAccountName`
+
+The `common.serviceAccountName` template accepts a list of three values:
+
+- `$top`, the top context
+- `$serviceAccount`, a dictionary of values used in the service account template
+- [optional] the template name of the overrides
+
+It generates a name suitable for the `serviceAccountName` field of a `Pod` resource. It is used like this:
+
+An example values file that can be used to configure the HorizontalPodAutoscaler resource is:
+
+```yaml
+serviceAccount:
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: some-name
+```
+
+Example usage:
+
+```
+serviceAccountName: {{ include "common.serviceAccountName" . .Values.serviceAccount }}
+```
+
+Example output:
+
+```yaml
+---
+# with the values above
+serviceAccountName: some-name
+
+---
+# if serviceAccount.name is not set, the value will be the same as "common.fullname"
+serviceAccountName: release-name-mychart
+
+---
+# if serviceAccount.create is false, the value will be "default"
+serviceAccountName: default
 ```
