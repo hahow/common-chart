@@ -6,6 +6,16 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 
 
 
+## Contents
+
+- [Resource Kinds](#resource-kinds)
+  * [`common.deployment`](#commondeployment)
+  * [`common.service`](#commonservice)
+- [Partial Objects](#partial-objects)
+  * [`common.container`](#commoncontainer)
+
+
+
 ## Resource Kinds
 
 Kubernetes defines a variety of resource kinds, from `Secret` to `StatefulSet`. We define some of the most common kinds in a way that lets you easily work with them.
