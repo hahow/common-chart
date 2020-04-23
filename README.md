@@ -14,6 +14,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.deployment`](#commondeployment)
   * [`common.hpa`](#commonhpa)
   * [`common.ingress`](#commoningress)
+  * [`common.pdb`](#commonpdb)
   * [`common.secret`](#commonsecret)
   * [`common.service`](#commonservice)
   * [`common.serviceAccount`](#commonserviceaccount)
@@ -327,6 +328,68 @@ spec:
   - hosts:
     - "chart-example.local"
     secretName: chart-example-tls
+```
+
+
+
+### `common.pdb`
+
+The `common.pdb` template accepts a list of five values:
+
+- `$top`, the top context
+- `$pdb`, a dictionary of values used in the hpa template
+- `$deployment`, a dictionary of values used in the deployment template
+- `$autoscaling`, a dictionary of values used in the hpa template
+- [optional] the template name of the overrides
+
+It creates a basic `PodDisruptionBudget` resource with the following defaults:
+
+- Selector is set to
+  ```yaml
+  app.kubernetes.io/name: {{ include "common.name" }}
+  app.kubernetes.io/instance: {{ .Release.Name }}
+  ```
+  to match the default used in the `Pod` resource
+
+An example values file that can be used to configure the `PodDisruptionBudget` resource is:
+
+```yaml
+podDisruptionBudget:
+  ## You can specify only one of maxUnavailable and minAvailable in a single PodDisruptionBudget
+  minAvailable: 2
+  # maxUnavailable: 1
+```
+
+Example use:
+
+```yaml
+{{- include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling) -}}
+
+## The following is the same as above:
+# {{- include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling "mychart.pdb") -}}
+# {{- define "mychart.pdb" -}}
+# {{- end -}}
+```
+
+Output:
+
+```yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: mychart
 ```
 
 
