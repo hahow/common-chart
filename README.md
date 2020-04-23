@@ -22,6 +22,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.serviceMonitor.secret`](#commonservicemonitorsecret)
 - [Partial Objects](#partial-objects)
   * [`common.container`](#commoncontainer)
+  * [`common.metadata`](#commonmetadata)
   * [`common.pod.template`](#commonpodtemplate)
 
 
@@ -879,6 +880,47 @@ spec:
           runAsUser: 1000
       serviceAccountName: release-name-mychart
 ```
+
+
+
+### `common.metadata`
+
+The `common.metadata` helper generates value for the `metadata:` section of a Kubernetes resource.
+
+This takes a list of two values:
+
+- `$top`, the top context
+- [optional] the template name of the overrides
+
+It generates standard labels and a name field.
+
+Example template:
+
+```yaml
+metadata:
+  {{- include "common.metadata" (list .) | nindent 2 }}
+
+## The following is the same as above:
+# metadata:
+#   {{- include "common.metadata" (list . "mychart.metadata") | nindent 2 }}
+# {{- define "mychart.metadata" -}}
+# {{- end -}}
+```
+
+Example output:
+
+```yaml
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+```
+
+Most of the common templates that define a resource type (e.g. `common.configMap` or `common.cronJob`) use this to generate the metadata, which means they inherit the same `labels` and `name` fields.
 
 
 
