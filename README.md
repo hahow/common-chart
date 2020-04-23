@@ -12,6 +12,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.configMap`](#commonconfigmap)
   * [`common.cronJob`](#commoncronjob)
   * [`common.deployment`](#commondeployment)
+  * [`common.hpa`](#commonhpa)
   * [`common.ingress`](#commoningress)
   * [`common.secret`](#commonsecret)
   * [`common.service`](#commonservice)
@@ -181,6 +182,77 @@ Example use:
 # {{- include "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
 # {{- define "mychart.deployment" -}}
 # {{- end -}}
+```
+
+
+
+### `common.hpa`
+
+The `common.hpa` template accepts a list of three values:
+
+- `$top`, the top context
+- `$autoscaling`, a dictionary of values used in the hpa template
+- [optional] the template name of the overrides
+
+It creates a basic `HorizontalPodAutoscaler` resource with the following defaults:
+
+- The name of scaled target is set with `"common.fullname"`
+
+An example values file that can be used to configure the `HorizontalPodAutoscaler` resource is:
+
+```yaml
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 5
+  cpuUtilizationPercentage: 50
+  memoryUtilizationPercentage: 90
+```
+
+Example use:
+
+```yaml
+{{- include "common.hpa" (list . .Values.autoscaling) -}}
+
+## The following is the same as above:
+# {{- include "common.hpa" (list . .Values.autoscaling "mychart.hpa") -}}
+# {{- define "mychart.hpa" -}}
+# {{- end -}}
+```
+
+Output:
+
+```yaml
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+spec:
+  maxReplicas: 5
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+  - resource:
+      name: memory
+      target:
+        averageUtilization: 90
+        type: Utilization
+    type: Resource
+  minReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-mychart
 ```
 
 
