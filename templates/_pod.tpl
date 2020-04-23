@@ -9,7 +9,7 @@ metadata:
 spec:
   {{- with $pod.imagePullSecrets }}
   imagePullSecrets:
-    {{- toYaml . | nindent 8 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   serviceAccountName: {{ include "common.serviceAccountName" $top }}
   securityContext:
