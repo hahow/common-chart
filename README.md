@@ -14,6 +14,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.ingress`](#commoningress)
   * [`common.secret`](#commonsecret)
   * [`common.service`](#commonservice)
+  * [`common.serviceAccount`](#commonserviceaccount)
 - [Partial Objects](#partial-objects)
   * [`common.container`](#commoncontainer)
   * [`common.pod.template`](#commonpodtemplate)
@@ -371,6 +372,56 @@ spec:
 
 
 
+### `common.serviceAccount`
+
+The `common.serviceAccount` template accepts a list of three values:
+
+- `$top`, the top context
+- `$serviceAccount`, a dictionary of values used in the service account template
+- [optional] the template name of the overrides
+
+It creates a basic `ServiceAccount` resource with the following defaults:
+
+- The name is set with `common.serviceAccountName`
+- Lays out the annotations using `$serviceAccount.annotations`
+
+An example values file that can be used to configure the `ServiceAccount` resource is:
+
+```yaml
+serviceAccount:
+  create: true
+  annotations: {}
+  name:
+```
+
+Example use:
+
+```yaml
+{{- include "common.serviceAccount" (list . .Values.serviceAccount) -}}
+
+## The following is the same as above:
+# {{- include "common.serviceAccount" (list . .Values.serviceAccount "mychart.serviceAccount") -}}
+# {{- define "mychart.serviceAccount" -}}
+# {{- end -}}
+```
+
+Output:
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+```
+
+
+
 ## Partial Objects
 
 When writing Kubernetes resources, you may find the following helpers useful to construct parts of the spec.
@@ -529,7 +580,7 @@ It creates a basic `PodTemplate` spec to be used within a `Deployment` or `CronJ
   app.kubernetes.io/instance: {{ .Release.Name }}
   ```
   as this is also used as the selector.
-- Service account name is set with `{{ include "common.serviceAccountName" $top }}`
+- Service account name is set with `common.serviceAccountName`
 
 It also uses the following configuration from the `$pod`:
 
