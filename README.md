@@ -1067,9 +1067,15 @@ The `common.serviceAccountName` template accepts a list of two values:
 - `$top`, the top context
 - `$serviceAccount`, a dictionary of values used in the service account template
 
-It generates a name suitable for the `serviceAccountName` field of a `Pod` resource. It is used like this:
+It generates a name suitable for the `serviceAccountName` field of a `Pod` resource.
 
-An example values file that can be used to configure the HorizontalPodAutoscaler resource is:
+Example usage:
+
+```
+serviceAccountName: {{ include "common.serviceAccountName" . .Values.serviceAccount }}
+```
+
+The following values can influence the output:
 
 ```yaml
 serviceAccount:
@@ -1077,12 +1083,6 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: some-name
-```
-
-Example usage:
-
-```
-serviceAccountName: {{ include "common.serviceAccountName" . .Values.serviceAccount }}
 ```
 
 Example output:
