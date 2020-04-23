@@ -1062,11 +1062,10 @@ app.kubernetes.io/name: mychart
 
 ### `common.serviceAccountName`
 
-The `common.serviceAccountName` template accepts a list of three values:
+The `common.serviceAccountName` template accepts a list of two values:
 
 - `$top`, the top context
 - `$serviceAccount`, a dictionary of values used in the service account template
-- [optional] the template name of the overrides
 
 It generates a name suitable for the `serviceAccountName` field of a `Pod` resource. It is used like this:
 
