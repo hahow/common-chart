@@ -15,7 +15,7 @@ The resource kind templates are designed to make it much faster for you to defin
 To make use of these templates you must define a template that will extend the base template (though it can be empty). The name of this template is then passed to the base template, for example:
 
 ```yaml
-{{- template "common.service" (list . .Values.service "mychart.service") -}}
+{{- include "common.service" (list . .Values.service "mychart.service") -}}
 {{- define "mychart.service" -}}
 ## Define overrides for your Service resource here, e.g.
 # metadata:
@@ -70,7 +70,7 @@ Underneath the hood, it uses [`common.container`](#commoncontainer).
 By default, the pod template within the deployment defines the labels 
 
 ```yaml
-app.kubernetes.io/name: {{ template "common.name" }}
+app.kubernetes.io/name: {{ include "common.name" }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 ```
 
@@ -79,10 +79,10 @@ as this is also used as the selector. The standard set of labels are not used as
 Example use:
 
 ```yaml
-{{- template "common.deployment" (list . .Values .Values.autoscaling) -}}
+{{- include "common.deployment" (list . .Values .Values.autoscaling) -}}
 
 ## The following is the same as above:
-# {{- template "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
+# {{- include "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
 # {{- define "mychart.deployment" -}}
 # {{- end -}}
 ```
@@ -103,7 +103,7 @@ It creates a basic `Service` resource with the following defaults:
 - Named port `http` configured on port `$service.port`
 - Selector set to
   ```yaml
-  app.kubernetes.io/name: {{ template "common.name" }}
+  app.kubernetes.io/name: {{ include "common.name" }}
   app.kubernetes.io/instance: {{ .Release.Name }}
   ```
   to match the default used in the `Deployment` resource
@@ -111,11 +111,11 @@ It creates a basic `Service` resource with the following defaults:
 Example template:
 
 ```yaml
-{{- template "common.service" (list . .Values.service "mychart.mail.service") -}}
+{{- include "common.service" (list . .Values.service "mychart.mail.service") -}}
 {{- define "mychart.mail.service" -}}
 {{- $top := first . -}}
 metadata:
-  name: {{ template "common.fullname" $top }}-mail  # overrides the default name to add a suffix
+  name: {{ include "common.fullname" $top }}-mail  # overrides the default name to add a suffix
   labels:                                           # appended to the labels section
     protocol: mail
 spec:
@@ -130,11 +130,11 @@ spec:
     protocol: mail
 {{- end }}
 ---
-{{ template "common.service" (list . .Values.service "mychart.web.service") -}}
+{{ include "common.service" (list . .Values.service "mychart.web.service") -}}
 {{- define "mychart.web.service" -}}
 {{- $top := first . -}}
 metadata:
-  name: {{ template "common.fullname" $top }}-www   # overrides the default name to add a suffix
+  name: {{ include "common.fullname" $top }}-www   # overrides the default name to add a suffix
   labels:                                           # appended to the labels section
     protocol: www
 spec:
@@ -231,7 +231,7 @@ It creates a basic `Container` spec to be used within a `Deployment` or `CronJob
 Example use:
 
 ```yaml
-{{- template "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
+{{- include "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
 {{- define "mychart.deployment" -}}
 ## Define overrides for your Deployment resource here, e.g.
 spec:
