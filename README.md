@@ -18,6 +18,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.secret`](#commonsecret)
   * [`common.service`](#commonservice)
   * [`common.serviceAccount`](#commonserviceaccount)
+  * [`common.serviceMonitor`](#commonservicemonitor)
 - [Partial Objects](#partial-objects)
   * [`common.container`](#commoncontainer)
   * [`common.pod.template`](#commonpodtemplate)
@@ -598,6 +599,89 @@ metadata:
     app.kubernetes.io/version: 1.16.0
     helm.sh/chart: mychart-0.1.0
   name: release-name-mychart
+```
+
+
+
+### `common.serviceMonitor`
+
+The `common.serviceMonitor` template accepts a list of three values:
+
+- `$top`, the top context
+- `$serviceMonitor`, a dictionary of values used in the service account template
+- [optional] the template name of the overrides
+
+It creates a basic `ServiceMonitor` resource with the following defaults:
+
+- Namespace selector is set to the release namespace
+- Selector is set to
+  ```yaml
+  app.kubernetes.io/name: {{ include "common.name" }}
+  app.kubernetes.io/instance: {{ .Release.Name }}
+  ```
+  to match the default used in the `Service` resource
+
+An example values file that can be used to configure the `ServiceMonitor` resource is:
+
+```yaml
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  port: 80
+  path: /path/to/metrics
+  interval: 30s
+  scrapeTimeout: 30s
+  basicAuth:
+    enabled: true
+    username: administrator
+    password: password
+```
+
+Example use:
+
+```yaml
+{{- include "common.serviceMonitor" (list . .Values.serviceMonitor) -}}
+
+## The following is the same as above:
+# {{- include "common.serviceMonitor" (list . .Values.serviceMonitor "mychart.serviceMonitor") -}}
+# {{- define "mychart.serviceMonitor" -}}
+# {{- end -}}
+```
+
+Output:
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+  namespace: monitoring
+spec:
+  endpoints:
+  - basicAuth:
+      password:
+        key: password
+        name: release-name-mychart
+      username:
+        key: username
+        name: release-name-mychart
+    interval: 30s
+    path: /path/to/metrics
+    port: 80
+    scrapeTimeout: 30s
+  namespaceSelector:
+    matchNames:
+    - default
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: mychart
 ```
 
 
