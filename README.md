@@ -9,6 +9,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 ## Contents
 
 - [Resource Kinds](#resource-kinds)
+  * [`common.configMap`](#commonconfigmap)
   * [`common.deployment`](#commondeployment)
   * [`common.service`](#commonservice)
 - [Partial Objects](#partial-objects)
@@ -54,9 +55,54 @@ Each implemented base resource is described in greater detail below.
 
 
 
+### `common.configMap`
+
+The `common.configMap` template accepts a list of two values:
+
+- the top context
+- [optional] the template name of the overrides
+
+It creates an empty `ConfigMap` resource that you can override with your configuration.
+
+Example use:
+
+```yaml
+{{- include "common.configMap" (list . "mychart.configMap") -}}
+{{- define "mychart.configMap" -}}
+data:
+  zeus: cat
+  athena: cat
+  julius: cat
+  one: |-
+    {{ .Files.Get "file1.txt" }}
+{{- end -}}
+```
+
+Output:
+
+```yaml
+apiVersion: v1
+data:
+  athena: cat
+  julius: cat
+  one: This is a file.
+  zeus: cat
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+```
+
+
+
 ### `common.deployment`
 
-The `common.deployment` template accepts a list of three values:
+The `common.deployment` template accepts a list of four values:
 
 - the top context
 - `$deployment`, a dictionary of values used in the deployment template
