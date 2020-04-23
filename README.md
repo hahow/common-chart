@@ -24,6 +24,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.container`](#commoncontainer)
   * [`common.labels`](#commonlabels)
   * [`common.metadata`](#commonmetadata)
+  * [`common.name`](#commonname)
   * [`common.pod.template`](#commonpodtemplate)
   * [`common.selectorLabels`](#commonselectorlabels)
 
@@ -926,6 +927,35 @@ metadata:
 
 Most of the common templates that define a resource type (e.g. `common.configMap` or `common.cronJob`) use this to generate the metadata, which means they inherit the same `labels` and `name` fields.
 
+
+
+### `common.name`
+
+The `common.name` template generates a name suitable for the `app.kubernetes.io/name` label. It is used like this:
+
+```yaml
+app.kubernetes.io/name: {{ include "common.name" . }}
+```
+
+This prints the value of `{{ .Chart.Name }}` by default, but can be overridden with `.Values.nameOverride`:
+
+```yaml
+nameOverride: some-name
+```
+
+Example output:
+
+```yaml
+---
+# with the values above
+app.kubernetes.io/name: some-name
+
+---
+# the default, for chart "mychart"
+app.kubernetes.io/name: mychart
+```
+
+Output of this function is truncated at 63 characters, which is the maximum length of name.
 
 
 ### `common.pod.template`
