@@ -16,6 +16,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.service`](#commonservice)
 - [Partial Objects](#partial-objects)
   * [`common.container`](#commoncontainer)
+  * [`common.pod.template`](#commonpodtemplate)
 
 
 
