@@ -22,6 +22,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.serviceMonitor.secret`](#commonservicemonitorsecret)
 - [Partial Objects](#partial-objects)
   * [`common.container`](#commoncontainer)
+  * [`common.fullname`](#commonfullname)
   * [`common.labels`](#commonlabels)
   * [`common.metadata`](#commonmetadata)
   * [`common.name`](#commonname)
@@ -198,7 +199,7 @@ The `common.hpa` template accepts a list of three values:
 
 It creates a basic `HorizontalPodAutoscaler` resource with the following defaults:
 
-- The name of scaled target is set with `"common.fullname"`
+- The name of scaled target is set with [`common.fullname`](#commonfullname)
 
 An example values file that can be used to configure the `HorizontalPodAutoscaler` resource is:
 
@@ -863,6 +864,36 @@ spec:
           runAsUser: 1000
       serviceAccountName: release-name-mychart
 ```
+
+
+
+### `common.fullname`
+
+The `common.fullname` template generates a name suitable for the `name:` field in Kubernetes metadata. It is used like this:
+
+```yaml
+name: {{ include "common.fullname" . }}
+```
+
+This prints the value of `{{ .Release.Name }}-{{ .Chart.Name }}` by default, but can be overridden with `.Values. fullnameOverride`:
+
+```yaml
+fullnameOverride: some-name
+```
+
+Example output:
+
+```yaml
+---
+# with the values above
+name: some-name
+
+---
+# the default, for release "release-name" and chart "mychart"
+name: release-name-mychart
+```
+
+Output of this function is truncated at 63 characters, which is the maximum length of name.
 
 
 
