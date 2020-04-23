@@ -19,6 +19,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.service`](#commonservice)
   * [`common.serviceAccount`](#commonserviceaccount)
   * [`common.serviceMonitor`](#commonservicemonitor)
+  * [`common.serviceMonitor.secret`](#commonservicemonitorsecret)
 - [Partial Objects](#partial-objects)
   * [`common.container`](#commoncontainer)
   * [`common.pod.template`](#commonpodtemplate)
@@ -682,6 +683,59 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: release-name
       app.kubernetes.io/name: mychart
+```
+
+
+
+### `common.serviceMonitor.secret`
+
+The `common.serviceMonitor.secret` template accepts a list of three values:
+
+- `$top`, the top context
+- `$serviceMonitor`, a dictionary of values used in the service account template
+- [optional] the template name of the overrides
+
+It creates a `Secret` resource contains the BasicAuth information for the `SecretMonitor`.
+
+An example `values.yaml` for your `ServiceMonitor` could look like:
+
+```yaml
+serviceMonitor:
+  basicAuth:
+    enabled: true
+    username: administrator
+    password: password
+```
+
+Example use:
+
+```yaml
+{{- include "common.serviceMonitor.secret" (list . .Values.serviceMonitor) -}}
+
+## The following is the same as above:
+# {{- include "common.serviceMonitor.secret" (list . .Values.serviceMonitor "mychart.serviceMonitor.secret") -}}
+# {{- define "mychart.serviceMonitor.secret" -}}
+# {{- end -}}
+```
+
+Output:
+
+```yaml
+apiVersion: v1
+data:
+  password: cGFzc3dvcmQ=
+  username: YWRtaW5pc3RyYXRvcg==
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+  namespace: monitoring
+type: Opaque
 ```
 
 
