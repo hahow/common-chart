@@ -10,6 +10,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 
 - [Resource Kinds](#resource-kinds)
   * [`common.configMap`](#commonconfigmap)
+  * [`common.cronJob`](#commoncronjob)
   * [`common.deployment`](#commondeployment)
   * [`common.ingress`](#commoningress)
   * [`common.secret`](#commonsecret)
@@ -101,6 +102,50 @@ metadata:
     helm.sh/chart: mychart-0.1.0
   name: release-name-mychart
 ```
+
+
+
+### `common.cronJob`
+
+The `common.cronJob` template accepts a list of four values:
+
+- `$top`, the top context
+- `$cronJob`, a dictionary of values used in the cronjob template
+- `$pod`, a dictionary of values used in the pod template
+- [optional] the template name of the overrides
+
+It defines a basic `CronJob` with the following defaults:
+
+- Defines the labels of `JobTemplate`
+  ```yaml
+  app.kubernetes.io/name: {{ include "common.name" }}
+  app.kubernetes.io/instance: {{ .Release.Name }}
+  ```
+  as this is also used as the selector.
+- Restart policy of pod is set to `OnFailure`
+
+In addition, it uses the following configuration from the `$cronJob`:
+
+| Value | Description |
+| ----- | ----------- |
+| `$cronJob.schedule` | Schedule for the cronjob |
+| `$cronJob.concurrencyPolicy` | [optional] `Allow\|Forbid\|Replace` concurrent jobs |
+| `$cronJob.failedJobsHistoryLimit` | [optional] Specify the number of failed jobs to keep |
+| `$cronJob.successfulJobsHistoryLimit` | [optional] Specify the number of completed jobs to keep |
+
+Underneath the hood, it invokes [`common.pod.template`](#commonpodtemplate) template with `$pod` to populate the `PodTemplate`.
+
+Example use:
+
+```yaml
+{{- include "common.cronJob" (list . .Values.cronJob .Values) -}}
+
+## The following is the same as above:
+# {{- include "common.cronJob" (list . .Values.cronJob .Values "mychart.cronJob") -}}
+# {{- define "mychart.cronJob" -}}
+# {{- end -}}
+```
+
 
 
 
