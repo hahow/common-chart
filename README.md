@@ -22,6 +22,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.serviceMonitor.secret`](#commonservicemonitorsecret)
 - [Partial Objects](#partial-objects)
   * [`common.container`](#commoncontainer)
+  * [`common.labels`](#commonlabels)
   * [`common.metadata`](#commonmetadata)
   * [`common.pod.template`](#commonpodtemplate)
   * [`common.selectorLabels`](#commonselectorlabels)
@@ -860,6 +861,28 @@ spec:
           runAsNonRoot: true
           runAsUser: 1000
       serviceAccountName: release-name-mychart
+```
+
+
+
+### `common.labels`
+
+`common.selectorLabels` prints the standard set of labels.
+
+Example usage:
+
+```
+{{ include "common.labels" . }}
+```
+
+Example output:
+
+```yaml
+app.kubernetes.io/instance: release-name
+app.kubernetes.io/managed-by: Helm
+app.kubernetes.io/name: mychart
+app.kubernetes.io/version: 1.16.0
+helm.sh/chart: mychart-0.1.0
 ```
 
 
