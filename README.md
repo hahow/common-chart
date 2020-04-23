@@ -11,6 +11,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 - [Resource Kinds](#resource-kinds)
   * [`common.configMap`](#commonconfigmap)
   * [`common.deployment`](#commondeployment)
+  * [`common.ingress`](#commoningress)
   * [`common.secret`](#commonsecret)
   * [`common.service`](#commonservice)
 - [Partial Objects](#partial-objects)
@@ -143,6 +144,81 @@ Example use:
 # {{- define "mychart.deployment" -}}
 # {{- end -}}
 ```
+
+
+
+### `common.ingress`
+
+The `common.ingress` template accepts a list of four values:
+
+- the top context
+- `$ingress`, a dictionary of values used in the ingress template
+- `$service`, a dictionary of values used in the service template
+- [optional] the template name of the overrides
+
+It is designed to give you a well-defined `Ingress` resource, that can be configured using `$ingress`. An example values file that can be used to configure the `Ingress` resource is:
+
+```yaml
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  hosts:
+  - host: chart-example.local
+    paths:
+    - /path/to/somewhere
+  tls:
+  - secretName: chart-example-tls
+    hosts:
+    - chart-example.local
+service:
+  type: ClusterIP
+  port: 80
+```
+
+Example use:
+
+```yaml
+{{- include "common.ingress" (list . .Values.ingress .Values.service) -}}
+
+## The following is the same as above:
+# {{- include "common.ingress" (list . .Values.ingress .Values.service "mychart.ingress") -}}
+# {{- define "mychart.ingress" -}}
+# {{- end -}}
+```
+
+Output:
+
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+spec:
+  rules:
+  - host: "chart-example.local"
+    http:
+      paths:
+      - backend:
+          serviceName: release-name-mychart
+          servicePort: 80
+        path: /path/to/somewhere
+  tls:
+  - hosts:
+    - "chart-example.local"
+    secretName: chart-example-tls
+```
+
 
 
 ### `common.secret`
