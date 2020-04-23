@@ -3,6 +3,7 @@
 {{- define "common.pod.template.tpl" -}}
 {{- $top := first . -}}
 {{- $pod := index . 1 -}}
+{{- $serviceAccount := index . 2 -}}
 metadata:
   labels:
     {{- include "common.selectorLabels" $top | nindent 4 }}
@@ -11,11 +12,11 @@ spec:
   imagePullSecrets:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  serviceAccountName: {{ include "common.serviceAccountName" $top }}
+  serviceAccountName: {{ include "common.serviceAccountName" (list $top $serviceAccount) }}
   securityContext:
     {{- toYaml $pod.podSecurityContext | nindent 4 }}
   containers:
-    - {{- include "common.container" . | nindent 6 }}
+    - {{- include "common.container" (list $top $pod) | nindent 6 }}
   {{- with $pod.nodeSelector }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}

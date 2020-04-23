@@ -9,6 +9,7 @@ spec:
 {{- $top := first . -}}
 {{- $cronJob := index . 1 -}}
 {{- $pod := index . 2 -}}
+{{- $serviceAccount := index . 3 -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -30,7 +31,7 @@ spec:
         {{- include "common.selectorLabels" $top | nindent 8 }}
     spec:
       template:
-        {{- include "common.pod.template" (list $top $pod "common.cronJob.pod") | nindent 8 }}
+        {{- include "common.pod.template" (list $top $pod $serviceAccount "common.cronJob.pod") | nindent 8 }}
 {{- end -}}
 
 {{- define "common.cronJob" -}}

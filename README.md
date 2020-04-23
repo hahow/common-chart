@@ -117,11 +117,12 @@ metadata:
 
 ### `common.cronJob`
 
-The `common.cronJob` template accepts a list of four values:
+The `common.cronJob` template accepts a list of five values:
 
 - `$top`, the top context
 - `$cronJob`, a dictionary of values used in the cronjob template
 - `$pod`, a dictionary of values used in the pod template
+- `$serviceAccount`, a dictionary of values used in the service account template
 - [optional] the template name of the overrides
 
 It defines a basic `CronJob` with the following defaults:
@@ -143,10 +144,10 @@ Underneath the hood, it invokes [`common.pod.template`](#commonpodtemplate) temp
 Example use:
 
 ```yaml
-{{- include "common.cronJob" (list . .Values.cronJob .Values) -}}
+{{- include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount) -}}
 
 ## The following is the same as above:
-# {{- include "common.cronJob" (list . .Values.cronJob .Values "mychart.cronJob") -}}
+# {{- include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount "mychart.cronJob") -}}
 # {{- define "mychart.cronJob" -}}
 # {{- end -}}
 ```
@@ -156,11 +157,12 @@ Example use:
 
 ### `common.deployment`
 
-The `common.deployment` template accepts a list of four values:
+The `common.deployment` template accepts a list of five values:
 
 - `$top`, the top context
 - `$deployment`, a dictionary of values used in the deployment template
 - `$autoscaling`, a dictionary of values used in the hpa template
+- `$serviceAccount`, a dictionary of values used in the service account template
 - [optional] the template name of the overrides
 
 It defines a basic `Deployment` with the following settings:
@@ -180,10 +182,10 @@ Underneath the hood, it invokes [`common.pod.template`](#commonpodtemplate) temp
 Example use:
 
 ```yaml
-{{- include "common.deployment" (list . .Values .Values.autoscaling) -}}
+{{- include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount) -}}
 
 ## The following is the same as above:
-# {{- include "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
+# {{- include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount "mychart.deployment") -}}
 # {{- define "mychart.deployment" -}}
 # {{- end -}}
 ```
@@ -1012,10 +1014,11 @@ Output of this function is truncated at 63 characters, which is the maximum leng
 
 ### `common.pod.template`
 
-The `common.pod.template` template accepts a list of three values:
+The `common.pod.template` template accepts a list of four values:
 
 - `$top`, the top context
 - `$pod`, a dictionary of values used in the container template
+- `$serviceAccount`, a dictionary of values used in the service account template
 - [optional] the template name of the overrides
 
 It creates a basic `PodTemplate` spec to be used within a `Deployment` or `CronJob`. It holds the following defaults:

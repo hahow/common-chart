@@ -36,9 +36,10 @@ Create chart name and version as used by the chart label.
 Create the name of the service account to use.
 */}}
 {{- define "common.serviceAccountName" -}}
-{{- $serviceAccount := .Values.serviceAccount | default (dict) -}}
+{{- $top := first . -}}
+{{- $serviceAccount := index . 1 -}}
 {{- if $serviceAccount.create -}}
-  {{ default (include "common.fullname" .) $serviceAccount.name }}
+  {{ default (include "common.fullname" $top) $serviceAccount.name }}
 {{- else -}}
   {{ default "default" $serviceAccount.name }}
 {{- end -}}
