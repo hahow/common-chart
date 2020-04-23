@@ -11,6 +11,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 - [Resource Kinds](#resource-kinds)
   * [`common.configMap`](#commonconfigmap)
   * [`common.deployment`](#commondeployment)
+  * [`common.secret`](#commonsecret)
   * [`common.service`](#commonservice)
 - [Partial Objects](#partial-objects)
   * [`common.container`](#commoncontainer)
@@ -141,6 +142,51 @@ Example use:
 # {{- include "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
 # {{- define "mychart.deployment" -}}
 # {{- end -}}
+```
+
+
+### `common.secret`
+
+The `common.secret` template accepts a list of two values:
+
+- the top context
+- [optional] the template name of the overrides
+
+It creates an empty `Secret` resource that you can override with your secrets.
+
+Example use:
+
+```yaml
+{{- include "common.secret" (list . "mychart.secret") -}}
+{{- define "mychart.secret" -}}
+data:
+  zeus: {{ print "cat" | b64enc }}
+  athena: {{ print "cat" | b64enc }}
+  julius: {{ print "cat" | b64enc }}
+  one: |-
+    {{ .Files.Get "file1.txt" | b64enc }}
+{{- end -}}
+```
+
+Output:
+
+```yaml
+apiVersion: v1
+data:
+  athena: Y2F0
+  julius: Y2F0
+  one: VGhpcyBpcyBhIGZpbGUuCg==
+  zeus: Y2F0
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mychart
+    app.kubernetes.io/version: 1.16.0
+    helm.sh/chart: mychart-0.1.0
+  name: release-name-mychart
+type: Opaque
 ```
 
 
