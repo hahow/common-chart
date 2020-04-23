@@ -24,6 +24,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.container`](#commoncontainer)
   * [`common.metadata`](#commonmetadata)
   * [`common.pod.template`](#commonpodtemplate)
+  * [`common.selectorLabels`](#commonselectorlabels)
 
 
 
@@ -121,12 +122,7 @@ The `common.cronJob` template accepts a list of four values:
 
 It defines a basic `CronJob` with the following defaults:
 
-- Defines the labels of `JobTemplate`
-  ```yaml
-  app.kubernetes.io/name: {{ include "common.name" }}
-  app.kubernetes.io/instance: {{ .Release.Name }}
-  ```
-  as this is also used as the selector.
+- Labels of `JobTemplate` are defined with [`common.selectorLabels`](#commonselectorlabels) as this is also used as the selector.
 - Restart policy of pod is set to `OnFailure`
 
 In addition, it uses the following configuration from the `$cronJob`:
@@ -347,12 +343,7 @@ The `common.pdb` template accepts a list of five values:
 
 It creates a basic `PodDisruptionBudget` resource with the following defaults:
 
-- Selector is set to
-  ```yaml
-  app.kubernetes.io/name: {{ include "common.name" }}
-  app.kubernetes.io/instance: {{ .Release.Name }}
-  ```
-  to match the default used in the `Pod` resource
+- Selector is set with [`common.selectorLabels`](#commonselectorlabels) to match the default used in the `Pod` resource
 
 An example values file that can be used to configure the `PodDisruptionBudget` resource is:
 
@@ -455,12 +446,7 @@ It creates a basic `Service` resource with the following defaults:
 
 - Service type (ClusterIP, NodePort, LoadBalancer) made configurable by `$service.type`
 - Named port `http` configured on port `$service.port`
-- Selector set to
-  ```yaml
-  app.kubernetes.io/name: {{ include "common.name" }}
-  app.kubernetes.io/instance: {{ .Release.Name }}
-  ```
-  to match the default used in the `Deployment` resource
+- Selector set with [`common.selectorLabels`](#commonselectorlabels) to match the default used in the `Deployment` resource
 
 Example template:
 
@@ -616,12 +602,7 @@ The `common.serviceMonitor` template accepts a list of three values:
 It creates a basic `ServiceMonitor` resource with the following defaults:
 
 - Namespace selector is set to the release namespace
-- Selector is set to
-  ```yaml
-  app.kubernetes.io/name: {{ include "common.name" }}
-  app.kubernetes.io/instance: {{ .Release.Name }}
-  ```
-  to match the default used in the `Service` resource
+- Selector is set with [`common.selectorLabels`](#commonselectorlabels) to match the default used in the `Service` resource
 
 An example values file that can be used to configure the `ServiceMonitor` resource is:
 
@@ -934,12 +915,7 @@ The `common.pod.template` template accepts a list of three values:
 
 It creates a basic `PodTemplate` spec to be used within a `Deployment` or `CronJob`. It holds the following defaults:
 
-- Defines the labels
-  ```yaml
-  app.kubernetes.io/name: {{ include "common.name" }}
-  app.kubernetes.io/instance: {{ .Release.Name }}
-  ```
-  as this is also used as the selector.
+- Labels are defined with [`common.selectorLabels`](#commonselectorlabels) as this is also used as the selector.
 - Service account name is set with `common.serviceAccountName`
 
 It also uses the following configuration from the `$pod`:
@@ -953,3 +929,22 @@ It also uses the following configuration from the `$pod`:
 | `$pod.tolerations ` | Toleration labels for pod assignment |
 
 Underneath the hood, it invokes [`common.container`](#commoncontainer) template with `$pod` to populate the `PodSpec`'s container list.
+
+
+
+### `common.selectorLabels`
+
+`common.selectorLabels` prints the standard set of selector labels.
+
+Example usage:
+
+```
+{{ include "common.selectorLabels" . }}
+```
+
+Example output:
+
+```yaml
+app.kubernetes.io/instance: release-name
+app.kubernetes.io/name: mychart
+```
