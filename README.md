@@ -23,10 +23,10 @@ To make use of these templates you must define a template that will extend the b
 #     custom: label
 # spec:
 #   ports:
-#     - port: 8080
-#       targetPort: http
-#       protocol: TCP
-#       name: http
+#   - port: 8080
+#     targetPort: http
+#     protocol: TCP
+#     name: http
 {{- end -}}
 ```
 
@@ -238,14 +238,14 @@ spec:
   template:
     spec:
       containers:
-        - {{- include "common.container" (append . "mychart.deployment.container") | nindent 10 }}
+      - {{- include "common.container" (append . "mychart.deployment.container") | nindent 8 }}
 {{- end -}}
 {{- define "mychart.deployment.container" -}}
 ## Define overrides for your Container here, e.g.
 ports:
-  - name: http
-    containerPort: 80
-    protocol: TCP
+- name: http
+  containerPort: 80
+  protocol: TCP
 livenessProbe:
   httpGet:
     path: /
@@ -270,7 +270,7 @@ image:
 securityContext:
   capabilities:
     drop:
-      - ALL
+    - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
