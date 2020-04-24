@@ -802,11 +802,13 @@ Example use:
 {{- include "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
 {{- define "mychart.deployment" -}}
 ## Define overrides for your Deployment resource here, e.g.
+{{- $top := first . -}}
+{{- $deployment := index . 1 -}}
 spec:
   template:
     spec:
       containers:
-      - {{- include "common.container" (append . "mychart.deployment.container") | nindent 8 }}
+      - {{- include "common.container" (list $top $deployment "mychart.deployment.container") | nindent 8 }}
 {{- end -}}
 {{- define "mychart.deployment.container" -}}
 ## Define overrides for your Container here, e.g.
