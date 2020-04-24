@@ -41,7 +41,7 @@ To use the library chart, `common` should be listed in `dependencies` field in y
 ```yaml
 dependencies:
   - name: common
-    version: 0.2.0
+    version: 0.3.0
     repository: https://hahow-helm-charts.storage.googleapis.com/
 ```
 
