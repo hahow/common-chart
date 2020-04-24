@@ -8,6 +8,7 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 
 ## Contents
 
+- [Installation](#installation)
 - [Resource Kinds](#resource-kinds)
   * [`common.configMap`](#commonconfigmap)
   * [`common.cronJob`](#commoncronjob)
@@ -30,6 +31,25 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
   * [`common.pod.template`](#commonpodtemplate)
   * [`common.selectorLabels`](#commonselectorlabels)
   * [`common.serviceAccountName`](#commonserviceaccountname)
+
+
+
+## Installation
+
+To use the library chart, `common` should be listed in `dependencies` field in your `Chart.yaml`:
+
+```yaml
+dependencies:
+  - name: common
+    version: 0.2.0
+    repository: https://hahow-helm-charts.storage.googleapis.com/
+```
+
+Once you have defined dependencies, you should run the following command to download this chart into your `charts/` directory:
+
+```shell
+$ helm dependency update
+```
 
 
 
