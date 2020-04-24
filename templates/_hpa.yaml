@@ -6,7 +6,7 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  {{ include "common.metadata" (list $top) | nindent 2 }}
+  {{- include "common.metadata" (list $top) | nindent 2 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

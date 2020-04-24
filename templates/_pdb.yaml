@@ -6,7 +6,7 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  {{ include "common.metadata" (list $top) | nindent 2 }}
+  {{- include "common.metadata" (list $top) | nindent 2 }}
 spec:
   selector:
     matchLabels:
@@ -24,9 +24,9 @@ spec:
 
 {{- define "common.pdb" -}}
 {{- $top := first . -}}
-{{- $pod := index . 2 -}}
+{{- $deployment := index . 2 -}}
 {{- $autoscaling := index . 3 -}}
-{{- if or (and $autoscaling.enabled (gt ($autoscaling.minReplicas | int) 1)) (gt ($pod.replicaCount | int) 1) }}
+{{- if or (and $autoscaling.enabled (gt ($autoscaling.minReplicas | int) 1)) (and (not $autoscaling.enabled) (gt ($deployment.replicaCount | int) 1)) }}
   {{- include "common.utils.merge" (append . "common.pdb.tpl") -}}
 {{- end -}}
 {{- end -}}

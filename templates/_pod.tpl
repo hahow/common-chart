@@ -2,29 +2,30 @@
 
 {{- define "common.pod.template.tpl" -}}
 {{- $top := first . -}}
-{{- $values := index . 1 -}}
+{{- $pod := index . 1 -}}
+{{- $serviceAccount := index . 2 -}}
 metadata:
   labels:
     {{- include "common.selectorLabels" $top | nindent 4 }}
 spec:
-  {{- with $values.imagePullSecrets }}
+  {{- with $pod.imagePullSecrets }}
   imagePullSecrets:
-    {{- toYaml . | nindent 8 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-  serviceAccountName: {{ include "common.serviceAccountName" $top }}
+  serviceAccountName: {{ include "common.serviceAccountName" (list $top $serviceAccount) }}
   securityContext:
-    {{- toYaml $values.podSecurityContext | nindent 4 }}
+    {{- toYaml $pod.podSecurityContext | nindent 4 }}
   containers:
-    - {{- include "common.container" . | nindent 6 }}
-  {{- with $values.nodeSelector }}
+    - {{- include "common.container" (list $top $pod) | nindent 6 }}
+  {{- with $pod.nodeSelector }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $values.affinity }}
+  {{- with $pod.affinity }}
   affinity:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $values.tolerations }}
+  {{- with $pod.tolerations }}
   tolerations:
     {{- toYaml . | nindent 4 }}
   {{- end }}

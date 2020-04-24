@@ -33,24 +33,13 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
-Common labels
-*/}}
-{{- define "common.labels" -}}
-helm.sh/chart: {{ include "common.chart" . }}
-{{ include "common.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end -}}
-
-{{/*
 Create the name of the service account to use.
 */}}
 {{- define "common.serviceAccountName" -}}
-{{- $serviceAccount := .Values.serviceAccount | default (dict) -}}
+{{- $top := first . -}}
+{{- $serviceAccount := index . 1 -}}
 {{- if $serviceAccount.create -}}
-  {{ default (include "common.fullname" .) $serviceAccount.name }}
+  {{ default (include "common.fullname" $top) $serviceAccount.name }}
 {{- else -}}
   {{ default "default" $serviceAccount.name }}
 {{- end -}}

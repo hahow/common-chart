@@ -21,7 +21,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  {{ include "common.metadata" (append . "common.ingress.metadata") | nindent 2 }}
+  {{- include "common.metadata" (append . "common.ingress.metadata") | nindent 2 }}
 spec:
 {{- if $ingress.tls }}
   tls:
