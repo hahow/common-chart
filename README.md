@@ -704,7 +704,7 @@ The `common.serviceMonitor.secret` template accepts a list of three values:
 - `$serviceMonitor`, a dictionary of values used in the service account template
 - [optional] the template name of the overrides
 
-It creates a `Secret` resource contains the BasicAuth information for the `SecretMonitor`.
+It creates a `Secret` resource contains the BasicAuth information for the `ServiceMonitor`.
 
 An example `values.yaml` for your `ServiceMonitor` could look like:
 
