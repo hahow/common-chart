@@ -1054,6 +1054,7 @@ It also uses the following configuration from the `$pod`:
 | Value | Description |
 | ----- | ----------- |
 | `$pod.imagePullSecrets` | Names of secrets containing private registry credentials |
+| `$pod.podAnnotations` | Pod annotations |
 | `$pod.podSecurityContext` | Security options |
 | `$pod.nodeSelector ` | Node labels for pod assignment |
 | `$pod.affinity ` | Expressions for affinity |

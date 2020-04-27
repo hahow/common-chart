@@ -5,6 +5,10 @@
 {{- $pod := index . 1 -}}
 {{- $serviceAccount := index . 2 -}}
 metadata:
+  {{- with $pod.podAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "common.selectorLabels" $top | nindent 4 }}
 spec:
