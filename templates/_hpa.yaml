@@ -1,8 +1,8 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.hpa.tpl" -}}
-{{- $top := first . -}}
-{{- $autoscaling := index . 1 -}}
+{{- $top := first . }}
+{{- $autoscaling := index . 1 }}
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -16,26 +16,26 @@ spec:
   maxReplicas: {{ $autoscaling.maxReplicas }}
   metrics:
   {{- with $autoscaling.cpuUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: {{ . }}
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ . }}
   {{- end }}
   {{- with $autoscaling.memoryUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: {{ . }}
-  {{- end -}}
-{{- end -}}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ . }}
+  {{- end }}
+{{- end }}
 
 {{- define "common.hpa" -}}
-{{- $autoscaling := index . 1 -}}
-{{- if $autoscaling.enabled -}}
-  {{- include "common.utils.merge" (append . "common.hpa.tpl") -}}
-{{- end -}}
-{{- end -}}
+{{- $autoscaling := index . 1 }}
+{{- if $autoscaling.enabled }}
+  {{- include "common.utils.merge" (append . "common.hpa.tpl") }}
+{{- end }}
+{{- end }}

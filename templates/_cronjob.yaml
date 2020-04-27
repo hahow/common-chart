@@ -3,13 +3,13 @@
 {{- define "common.cronJob.pod" -}}
 spec:
   restartPolicy: OnFailure
-{{- end -}}
+{{- end }}
 
 {{- define "common.cronJob.tpl" -}}
-{{- $top := first . -}}
-{{- $cronJob := index . 1 -}}
-{{- $pod := index . 2 -}}
-{{- $serviceAccount := index . 3 -}}
+{{- $top := first . }}
+{{- $cronJob := index . 1 }}
+{{- $pod := index . 2 }}
+{{- $serviceAccount := index . 3 }}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -32,8 +32,8 @@ spec:
     spec:
       template:
         {{- include "common.pod.template" (list $top $pod $serviceAccount "common.cronJob.pod") | nindent 8 }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.cronJob" -}}
-{{- include "common.utils.merge" (append . "common.cronJob.tpl") -}}
-{{- end -}}
+{{- include "common.utils.merge" (append . "common.cronJob.tpl") }}
+{{- end }}

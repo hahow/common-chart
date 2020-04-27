@@ -21,9 +21,3 @@
 .idea/
 *.tmproj
 .vscode/
-# Others
-starter/
-.github/
-gcloud_auth_key.json
-create.sh
-README.md

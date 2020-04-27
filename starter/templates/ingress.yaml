@@ -1,0 +1,3 @@
+{{/* vim: set filetype=mustache: */}}
+
+{{- include "common.ingress" (list . .Values.ingress .Values.service) }}

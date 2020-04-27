@@ -1,10 +1,14 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.pod.template.tpl" -}}
-{{- $top := first . -}}
-{{- $pod := index . 1 -}}
-{{- $serviceAccount := index . 2 -}}
+{{- $top := first . }}
+{{- $pod := index . 1 }}
+{{- $serviceAccount := index . 2 }}
 metadata:
+  {{- with $pod.podAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "common.selectorLabels" $top | nindent 4 }}
 spec:
@@ -16,7 +20,7 @@ spec:
   securityContext:
     {{- toYaml $pod.podSecurityContext | nindent 4 }}
   containers:
-    - {{- include "common.container" (list $top $pod) | nindent 6 }}
+  - {{- include "common.container" (list $top $pod) | nindent 4 }}
   {{- with $pod.nodeSelector }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}
@@ -29,8 +33,8 @@ spec:
   tolerations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.pod.template" -}}
-{{- include "common.utils.merge" (append . "common.pod.template.tpl") -}}
-{{- end -}}
+{{- include "common.utils.merge" (append . "common.pod.template.tpl") }}
+{{- end }}

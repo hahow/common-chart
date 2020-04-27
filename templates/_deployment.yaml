@@ -1,10 +1,10 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.deployment.tpl" -}}
-{{- $top := first . -}}
-{{- $deployment := index . 1 -}}
-{{- $autoscaling := index . 2 -}}
-{{- $serviceAccount := index . 3 -}}
+{{- $top := first . }}
+{{- $deployment := index . 1 }}
+{{- $autoscaling := index . 2 }}
+{{- $serviceAccount := index . 3 }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,8 +18,8 @@ spec:
       {{- include "common.selectorLabels" $top | nindent 6 }}
   template:
     {{- include "common.pod.template" (list $top $deployment $serviceAccount) | nindent 4 }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.deployment" -}}
-{{- include "common.utils.merge" (append . "common.deployment.tpl") -}}
-{{- end -}}
+{{- include "common.utils.merge" (append . "common.deployment.tpl") }}
+{{- end }}

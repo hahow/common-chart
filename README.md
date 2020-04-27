@@ -8,7 +8,10 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 
 ## Contents
 
-- [Installation](#installation)
+- [Getting Started](#getting-started)
+  * [Adding Repository](#adding-repository)
+  * [Adding Dependency](#adding-dependency)
+  * [Using Starter](#using-starter)
 - [Resource Kinds](#resource-kinds)
   * [`common.configMap`](#commonconfigmap)
   * [`common.cronJob`](#commoncronjob)
@@ -34,22 +37,52 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 
 
 
-## Installation
+## Getting Started
+
+### Adding Repository
+
+The following command allows you to download and install all the charts from our repository:
+
+```shell
+$ helm repo add hahow https://hahow-helm-charts.storage.googleapis.com/
+```
+
+### Adding Dependency
 
 To use the library chart, `common` should be listed in `dependencies` field in your `Chart.yaml`:
 
 ```yaml
 dependencies:
   - name: common
-    version: 0.3.0
+    version: 0.4.0
     repository: https://hahow-helm-charts.storage.googleapis.com/
 ```
 
 Once you have defined dependencies, you should run the following command to download this chart into your `charts/` directory:
 
 ```shell
-$ helm dependency update
+$ helm dep build
 ```
+
+### Using Starter
+
+The best way to get started is to use the [`create` script](create.sh) to generate a new chart.
+
+You can fetch that script, and then execute it locally:
+
+```shell
+$ curl -fsSL -o create.sh https://raw.githubusercontent.com/hahow/common-chart/master/create.sh
+$ chmod 700 create.sh
+$ ./create.sh mychart
+```
+
+or simply
+
+```shell
+$ curl https://raw.githubusercontent.com/hahow/common-chart/master/create.sh | bash -s -- mychart
+```
+
+Now, there is a chart in `./mychart`. You can edit it and create your own templates.
 
 
 
@@ -62,7 +95,7 @@ The resource kind templates are designed to make it much faster for you to defin
 To make use of these templates you must define a template that will extend the base template (though it can be empty). The name of this template is then passed to the base template, for example:
 
 ```yaml
-{{- include "common.service" (list . .Values.service "mychart.service") -}}
+{{- include "common.service" (list . .Values.service "mychart.service") }}
 {{- define "mychart.service" -}}
 ## Define overrides for your Service resource here, e.g.
 # metadata:
@@ -74,7 +107,7 @@ To make use of these templates you must define a template that will extend the b
 #     targetPort: http
 #     protocol: TCP
 #     name: http
-{{- end -}}
+{{- end }}
 ```
 
 Note that the [`common.service`](#commonservice) template defines three parameters:
@@ -103,7 +136,7 @@ It creates an empty `ConfigMap` resource that you can override with your configu
 Example use:
 
 ```yaml
-{{- include "common.configMap" (list . "mychart.configMap") -}}
+{{- include "common.configMap" (list . "mychart.configMap") }}
 {{- define "mychart.configMap" -}}
 data:
   zeus: cat
@@ -111,7 +144,7 @@ data:
   julius: cat
   one: |-
     {{ .Files.Get "file1.txt" }}
-{{- end -}}
+{{- end }}
 ```
 
 Output:
@@ -165,12 +198,12 @@ Underneath the hood, it invokes [`common.pod.template`](#commonpodtemplate) temp
 Example use:
 
 ```yaml
-{{- include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount) -}}
+{{- include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount) }}
 
 ## The following is the same as above:
-# {{- include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount "mychart.cronJob") -}}
+# {{- include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount "mychart.cronJob") }}
 # {{- define "mychart.cronJob" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 
@@ -203,12 +236,12 @@ Underneath the hood, it invokes [`common.pod.template`](#commonpodtemplate) temp
 Example use:
 
 ```yaml
-{{- include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount) -}}
+{{- include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount) }}
 
 ## The following is the same as above:
-# {{- include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount "mychart.deployment") -}}
+# {{- include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount "mychart.deployment") }}
 # {{- define "mychart.deployment" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 
@@ -239,12 +272,12 @@ autoscaling:
 Example use:
 
 ```yaml
-{{- include "common.hpa" (list . .Values.autoscaling) -}}
+{{- include "common.hpa" (list . .Values.autoscaling) }}
 
 ## The following is the same as above:
-# {{- include "common.hpa" (list . .Values.autoscaling "mychart.hpa") -}}
+# {{- include "common.hpa" (list . .Values.autoscaling "mychart.hpa") }}
 # {{- define "mychart.hpa" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 Output:
@@ -317,12 +350,12 @@ service:
 Example use:
 
 ```yaml
-{{- include "common.ingress" (list . .Values.ingress .Values.service) -}}
+{{- include "common.ingress" (list . .Values.ingress .Values.service) }}
 
 ## The following is the same as above:
-# {{- include "common.ingress" (list . .Values.ingress .Values.service "mychart.ingress") -}}
+# {{- include "common.ingress" (list . .Values.ingress .Values.service "mychart.ingress") }}
 # {{- define "mychart.ingress" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 Output:
@@ -384,12 +417,12 @@ podDisruptionBudget:
 Example use:
 
 ```yaml
-{{- include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling) -}}
+{{- include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling) }}
 
 ## The following is the same as above:
-# {{- include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling "mychart.pdb") -}}
+# {{- include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling "mychart.pdb") }}
 # {{- define "mychart.pdb" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 Output:
@@ -427,7 +460,7 @@ It creates an empty `Secret` resource that you can override with your secrets.
 Example use:
 
 ```yaml
-{{- include "common.secret" (list . "mychart.secret") -}}
+{{- include "common.secret" (list . "mychart.secret") }}
 {{- define "mychart.secret" -}}
 data:
   zeus: {{ print "cat" | b64enc }}
@@ -435,7 +468,7 @@ data:
   julius: {{ print "cat" | b64enc }}
   one: |-
     {{ .Files.Get "file1.txt" | b64enc }}
-{{- end -}}
+{{- end }}
 ```
 
 Output:
@@ -478,9 +511,9 @@ It creates a basic `Service` resource with the following defaults:
 Example template:
 
 ```yaml
-{{- include "common.service" (list . .Values.service "mychart.mail.service") -}}
+{{- include "common.service" (list . .Values.service "mychart.mail.service") }}
 {{- define "mychart.mail.service" -}}
-{{- $top := first . -}}
+{{- $top := first . }}
 metadata:
   name: {{ include "common.fullname" $top }}-mail # overrides the default name to add a suffix
   labels:                                         # appended to the labels section
@@ -497,9 +530,9 @@ spec:
     protocol: mail
 {{- end }}
 ---
-{{ include "common.service" (list . .Values.service "mychart.web.service") -}}
+{{ include "common.service" (list . .Values.service "mychart.web.service") }}
 {{- define "mychart.web.service" -}}
-{{- $top := first . -}}
+{{- $top := first . }}
 metadata:
   name: {{ include "common.fullname" $top }}-www  # overrides the default name to add a suffix
   labels:                                         # appended to the labels section
@@ -509,7 +542,7 @@ spec:
   - name: www
     port: 80
     targetPort: 8080
-{{- end -}}
+{{- end }}
 ```
 
 The above template defines _two_ services: a web service and a mail service.
@@ -593,12 +626,12 @@ serviceAccount:
 Example use:
 
 ```yaml
-{{- include "common.serviceAccount" (list . .Values.serviceAccount) -}}
+{{- include "common.serviceAccount" (list . .Values.serviceAccount) }}
 
 ## The following is the same as above:
-# {{- include "common.serviceAccount" (list . .Values.serviceAccount "mychart.serviceAccount") -}}
+# {{- include "common.serviceAccount" (list . .Values.serviceAccount "mychart.serviceAccount") }}
 # {{- define "mychart.serviceAccount" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 Output:
@@ -650,12 +683,12 @@ serviceMonitor:
 Example use:
 
 ```yaml
-{{- include "common.serviceMonitor" (list . .Values.serviceMonitor) -}}
+{{- include "common.serviceMonitor" (list . .Values.serviceMonitor) }}
 
 ## The following is the same as above:
-# {{- include "common.serviceMonitor" (list . .Values.serviceMonitor "mychart.serviceMonitor") -}}
+# {{- include "common.serviceMonitor" (list . .Values.serviceMonitor "mychart.serviceMonitor") }}
 # {{- define "mychart.serviceMonitor" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 Output:
@@ -704,7 +737,7 @@ The `common.serviceMonitor.secret` template accepts a list of three values:
 - `$serviceMonitor`, a dictionary of values used in the service account template
 - [optional] the template name of the overrides
 
-It creates a `Secret` resource contains the BasicAuth information for the `SecretMonitor`.
+It creates a `Secret` resource contains the BasicAuth information for the `ServiceMonitor`.
 
 An example `values.yaml` for your `ServiceMonitor` could look like:
 
@@ -719,12 +752,12 @@ serviceMonitor:
 Example use:
 
 ```yaml
-{{- include "common.serviceMonitor.secret" (list . .Values.serviceMonitor) -}}
+{{- include "common.serviceMonitor.secret" (list . .Values.serviceMonitor) }}
 
 ## The following is the same as above:
-# {{- include "common.serviceMonitor.secret" (list . .Values.serviceMonitor "mychart.serviceMonitor.secret") -}}
+# {{- include "common.serviceMonitor.secret" (list . .Values.serviceMonitor "mychart.serviceMonitor.secret") }}
 # {{- define "mychart.serviceMonitor.secret" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 Output:
@@ -799,15 +832,17 @@ It creates a basic `Container` spec to be used within a `Deployment` or `CronJob
 Example use:
 
 ```yaml
-{{- include "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") -}}
+{{- include "common.deployment" (list . .Values .Values.autoscaling "mychart.deployment") }}
 {{- define "mychart.deployment" -}}
 ## Define overrides for your Deployment resource here, e.g.
+{{- $top := first . }}
+{{- $deployment := index . 1 }}
 spec:
   template:
     spec:
       containers:
-      - {{- include "common.container" (append . "mychart.deployment.container") | nindent 8 }}
-{{- end -}}
+      - {{- include "common.container" (list $top $deployment "mychart.deployment.container") | nindent 8 }}
+{{- end }}
 {{- define "mychart.deployment.container" -}}
 ## Define overrides for your Container here, e.g.
 ports:
@@ -822,7 +857,7 @@ readinessProbe:
   httpGet:
     path: /
     port: http
-{{- end -}}
+{{- end }}
 ```
 
 The above example creates a `Deployment` resource which makes use of the `common.container` template to populate the `PodSpec`'s container list. The usage of this template is similar to the other resources, you must define and reference a template that contains overrides for the container object.
@@ -984,7 +1019,7 @@ metadata:
 # metadata:
 #   {{- include "common.metadata" (list . "mychart.metadata") | nindent 2 }}
 # {{- define "mychart.metadata" -}}
-# {{- end -}}
+# {{- end }}
 ```
 
 Example output:
@@ -1052,6 +1087,7 @@ It also uses the following configuration from the `$pod`:
 | Value | Description |
 | ----- | ----------- |
 | `$pod.imagePullSecrets` | Names of secrets containing private registry credentials |
+| `$pod.podAnnotations` | Pod annotations |
 | `$pod.podSecurityContext` | Security options |
 | `$pod.nodeSelector ` | Node labels for pod assignment |
 | `$pod.affinity ` | Expressions for affinity |
