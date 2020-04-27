@@ -20,7 +20,7 @@ spec:
   securityContext:
     {{- toYaml $pod.podSecurityContext | nindent 4 }}
   containers:
-    - {{- include "common.container" (list $top $pod) | nindent 6 }}
+  - {{- include "common.container" (list $top $pod) | nindent 4 }}
   {{- with $pod.nodeSelector }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}

@@ -16,20 +16,20 @@ spec:
   maxReplicas: {{ $autoscaling.maxReplicas }}
   metrics:
   {{- with $autoscaling.cpuUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: {{ . }}
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ . }}
   {{- end }}
   {{- with $autoscaling.memoryUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: {{ . }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ . }}
   {{- end }}
 {{- end }}
 
