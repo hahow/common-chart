@@ -8,7 +8,10 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 
 ## Contents
 
-- [Installation](#installation)
+- [Getting Started](#getting-started)
+  * [Adding Repository](#adding-repository)
+  * [Adding Dependency](#adding-dependency)
+  * [Using Starter](#using-starter)
 - [Resource Kinds](#resource-kinds)
   * [`common.configMap`](#commonconfigmap)
   * [`common.cronJob`](#commoncronjob)
@@ -34,7 +37,17 @@ It provides utilities that reflect best practices of Kubernetes chart developmen
 
 
 
-## Installation
+## Getting Started
+
+### Adding Repository
+
+The following command allows you to download and install all the charts from our repository:
+
+```shell
+$ helm repo add hahow https://hahow-helm-charts.storage.googleapis.com/
+```
+
+### Adding Dependency
 
 To use the library chart, `common` should be listed in `dependencies` field in your `Chart.yaml`:
 
@@ -48,8 +61,28 @@ dependencies:
 Once you have defined dependencies, you should run the following command to download this chart into your `charts/` directory:
 
 ```shell
-$ helm dependency update
+$ helm dep build
 ```
+
+### Using Starter
+
+The best way to get started is to use the [`create` script](create.sh) to generate a new chart.
+
+You can fetch that script, and then execute it locally:
+
+```shell
+$ curl -fsSL -o create.sh https://raw.githubusercontent.com/hahow/common-chart/master/create.sh
+$ chmod 700 create.sh
+$ ./create.sh mychart
+```
+
+or simply
+
+```shell
+$ curl https://raw.githubusercontent.com/hahow/common-chart/master/create.sh | bash -s -- mychart
+```
+
+Now, there is a chart in `./mychart`. You can edit it and create your own templates.
 
 
 
