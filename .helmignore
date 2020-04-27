@@ -21,5 +21,8 @@
 .idea/
 *.tmproj
 .vscode/
-# Secrets
+# Others
+starter/
+.github/
 gcloud_auth_key.json
+README.md
