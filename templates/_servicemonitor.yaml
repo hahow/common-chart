@@ -1,15 +1,15 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.serviceMonitor.metadata" -}}
-{{- $serviceMonitor := index . 1 -}}
+{{- $serviceMonitor := index . 1 }}
 {{- with $serviceMonitor.namespace }}
 namespace: {{ . }}
 {{- end }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.serviceMonitor.tpl" -}}
-{{- $top := first . -}}
-{{- $serviceMonitor := index . 1 -}}
+{{- $top := first . }}
+{{- $serviceMonitor := index . 1 }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -32,8 +32,8 @@ spec:
     {{- with $serviceMonitor.scrapeTimeout }}
     scrapeTimeout: {{ . }}
     {{- end }}
-    {{- $basicAuth := $serviceMonitor.basicAuth | default (dict) -}}
-    {{- $name := $basicAuth.secretName | default (include "common.fullname" $top) -}}
+    {{- $basicAuth := $serviceMonitor.basicAuth | default (dict) }}
+    {{- $name := $basicAuth.secretName | default (include "common.fullname" $top) }}
     {{- if $basicAuth.enabled }}
     basicAuth:
       username:
@@ -43,12 +43,12 @@ spec:
         name: {{ $name }}
         key: {{ $basicAuth.passwordKey | default "password" }}
     {{- end }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.serviceMonitor" -}}
-{{- $top := first . -}}
-{{- $serviceMonitor := index . 1 -}}
-{{- if $serviceMonitor.enabled -}}
-  {{- include "common.utils.merge" (append . "common.serviceMonitor.tpl") -}}
-{{- end -}}
-{{- end -}}
+{{- $top := first . }}
+{{- $serviceMonitor := index . 1 }}
+{{- if $serviceMonitor.enabled }}
+  {{- include "common.utils.merge" (append . "common.serviceMonitor.tpl") }}
+{{- end }}
+{{- end }}

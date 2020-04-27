@@ -1,8 +1,8 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.pdb.tpl" -}}
-{{- $top := first . -}}
-{{- $pdb := index . 1 -}}
+{{- $top := first . }}
+{{- $pdb := index . 1 }}
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
@@ -11,22 +11,22 @@ spec:
   selector:
     matchLabels:
       {{- include "common.selectorLabels" $top | nindent 6 }}
-  {{- if not (or (empty $pdb.minAvailable) (empty $pdb.maxUnavailable)) -}}
+  {{- if not (or (empty $pdb.minAvailable) (empty $pdb.maxUnavailable)) }}
     {{- fail "minAvailable and maxUnavailable can not be set together" }}
-  {{- end -}}
+  {{- end }}
   {{- with $pdb.minAvailable }}
   minAvailable: {{ . }}
   {{- end }}
   {{- with $pdb.maxUnavailable }}
   maxUnavailable: {{ . }}
   {{- end }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.pdb" -}}
-{{- $top := first . -}}
-{{- $deployment := index . 2 -}}
-{{- $autoscaling := index . 3 -}}
+{{- $top := first . }}
+{{- $deployment := index . 2 }}
+{{- $autoscaling := index . 3 }}
 {{- if or (and $autoscaling.enabled (gt ($autoscaling.minReplicas | int) 1)) (and (not $autoscaling.enabled) (gt ($deployment.replicaCount | int) 1)) }}
-  {{- include "common.utils.merge" (append . "common.pdb.tpl") -}}
-{{- end -}}
-{{- end -}}
+  {{- include "common.utils.merge" (append . "common.pdb.tpl") }}
+{{- end }}
+{{- end }}

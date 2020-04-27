@@ -1,9 +1,9 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.pod.template.tpl" -}}
-{{- $top := first . -}}
-{{- $pod := index . 1 -}}
-{{- $serviceAccount := index . 2 -}}
+{{- $top := first . }}
+{{- $pod := index . 1 }}
+{{- $serviceAccount := index . 2 }}
 metadata:
   {{- with $pod.podAnnotations }}
   annotations:
@@ -33,8 +33,8 @@ spec:
   tolerations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.pod.template" -}}
-{{- include "common.utils.merge" (append . "common.pod.template.tpl") -}}
-{{- end -}}
+{{- include "common.utils.merge" (append . "common.pod.template.tpl") }}
+{{- end }}

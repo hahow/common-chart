@@ -1,9 +1,9 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.container.tpl" -}}
-{{- $top := first . -}}
-{{- $container := index . 1 -}}
-{{- $image := $container.image | default (dict) -}}
+{{- $top := first . }}
+{{- $container := index . 1 }}
+{{- $image := $container.image | default (dict) }}
 name: {{ $top.Chart.Name }}
 securityContext:
   {{- toYaml $container.securityContext | nindent 2 }}
@@ -11,8 +11,8 @@ image: "{{ $image.repository }}:{{ $image.tag | default $top.Chart.AppVersion }}
 imagePullPolicy: {{ $container.image.pullPolicy }}
 resources:
   {{- toYaml $container.resources | nindent 2 }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.container" -}}
-{{- include "common.utils.merge" (append . "common.container.tpl") -}}
-{{- end -}}
+{{- include "common.utils.merge" (append . "common.container.tpl") }}
+{{- end }}

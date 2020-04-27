@@ -1,22 +1,22 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "common.ingress.metadata" -}}
-{{- $ingress := index . 1 -}}
+{{- $ingress := index . 1 }}
 {{- with $ingress.annotations }}
 annotations:
   {{- toYaml . | nindent 2 }}
 {{- end }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.ingress.tpl" -}}
-{{- $top := first . -}}
-{{- $ingress := index . 1 -}}
-{{- $service := index . 2 -}}
-{{- $fullName := include "common.fullname" $top -}}
-{{- $svcPort := $service.port -}}
-{{- if semverCompare ">=1.14-0" $top.Capabilities.KubeVersion.GitVersion -}}
+{{- $top := first . }}
+{{- $ingress := index . 1 }}
+{{- $service := index . 2 }}
+{{- $fullName := include "common.fullname" $top }}
+{{- $svcPort := $service.port }}
+{{- if semverCompare ">=1.14-0" $top.Capabilities.KubeVersion.GitVersion }}
 apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
+{{- else }}
 apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
@@ -45,11 +45,11 @@ spec:
               servicePort: {{ $svcPort }}
         {{- end }}
   {{- end }}
-{{- end -}}
+{{- end }}
 
 {{- define "common.ingress" -}}
-{{- $ingress := index . 1 -}}
-{{- if $ingress.enabled -}}
-  {{- include "common.utils.merge" (append . "common.ingress.tpl") -}}
-{{- end -}}
-{{- end -}}
+{{- $ingress := index . 1 }}
+{{- if $ingress.enabled }}
+  {{- include "common.utils.merge" (append . "common.ingress.tpl") }}
+{{- end }}
+{{- end }}
