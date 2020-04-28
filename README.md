@@ -66,20 +66,20 @@ $ helm dep build
 
 ### Using Starter
 
-The best way to get started is to use the [`create` script](create.sh) to generate a new chart.
+The best way to get started is to use the [`create-chart` script](scripts/create-chart.sh) to generate a new chart.
 
 You can fetch that script, and then execute it locally:
 
 ```shell
-$ curl -fsSL -o create.sh https://raw.githubusercontent.com/hahow/common-chart/master/create.sh
-$ chmod 700 create.sh
-$ ./create.sh mychart
+$ curl -fsSL -o create.sh https://raw.githubusercontent.com/hahow/common-chart/master/scripts/create-chart.sh
+$ chmod 700 create-chart.sh
+$ ./create-chart.sh mychart
 ```
 
 or simply
 
 ```shell
-$ curl https://raw.githubusercontent.com/hahow/common-chart/master/create.sh | bash -s -- mychart
+$ curl https://raw.githubusercontent.com/hahow/common-chart/master/scripts/create-chart.sh | bash -s -- mychart
 ```
 
 Now, there is a chart in `./mychart`. You can edit it and create your own templates.

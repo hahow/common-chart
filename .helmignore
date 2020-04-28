@@ -24,6 +24,6 @@
 # Others
 starter/
 .github/
+scripts/
 gcloud_auth_key.json
-create.sh
 README.md
