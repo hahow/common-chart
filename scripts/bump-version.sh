@@ -8,13 +8,15 @@ printusage() {
 
 ROOT_PATH=$(dirname "$0")/..
 
-if [[ $# -eq 0 ]]; then
+if [[ $# -eq 0 ]]
+then
   printusage
   exit 1
 fi
 
 UPDATED_PART=$1
-if [[ ! ($UPDATED_PART == "patch" || $UPDATED_PART == "minor" || $UPDATED_PART == "major") ]]; then
+if [[ ! ($UPDATED_PART == "patch" || $UPDATED_PART == "minor" || $UPDATED_PART == "major") ]]
+then
   printusage
   exit 1
 fi
