@@ -26,10 +26,21 @@ MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d '.' -f 1)
 MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d '.' -f 2)
 PATCH_VERSION=$(echo $CURRENT_VERSION | cut -d '.' -f 3)
 
-UPDATED_PART_VAR=$(echo $UPDATED_PART | tr '[:lower:]' '[:upper:]')_VERSION
-eval $UPDATED_PART_VAR'=$(($'$UPDATED_PART_VAR' + 1))'
-NEW_VERSION=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION
+if [[ $UPDATED_PART = 'patch' ]]
+then
+    (( PATCH_VERSION++ ))
+elif [[ $UPDATED_PART = 'minor' ]]
+then
+    (( MINOR_VERSION++ ))
+    PATCH_VERSION=0
+elif [[ $UPDATED_PART = 'major' ]]
+then
+    (( MAJOR_VERSION ++ ))
+    MINOR_VERSION=0
+    PATCH_VERSION=0
+fi
 
+NEW_VERSION=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION
 echo "Bumping Version $CURRENT_VERSION => $NEW_VERSION..."
 
 echo "Updating starter/Chart.yaml..."
