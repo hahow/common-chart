@@ -21,7 +21,7 @@ then
   exit 1
 fi
 
-CURRENT_VERSION=$(sed -ne 's/^version: \([0-9]\+\.[0-9]\+\.[0-9]\+\)$/\1/p' $ROOT_PATH/Chart.yaml)
+CURRENT_VERSION=$(sed -ne 's/^version: \([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$/\1/p' $ROOT_PATH/Chart.yaml)
 MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d '.' -f 1)
 MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d '.' -f 2)
 PATCH_VERSION=$(echo $CURRENT_VERSION | cut -d '.' -f 3)
@@ -44,10 +44,10 @@ NEW_VERSION=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION
 echo "Bumping Version $CURRENT_VERSION => $NEW_VERSION..."
 
 echo "Updating starter/Chart.yaml..."
-sed -i"" "s/^  version: \"$CURRENT_VERSION\"$/  version: \"$NEW_VERSION\"/" $ROOT_PATH/starter/Chart.yaml
+sed -i "" "s/^  version: \"$CURRENT_VERSION\"$/  version: \"$NEW_VERSION\"/" $ROOT_PATH/starter/Chart.yaml
 
 echo "Updating README.md..."
-sed -i"" "/^### Adding Dependency$/,/^### Using Starter$/s;version: $CURRENT_VERSION;version: $NEW_VERSION;" $ROOT_PATH/README.md
+sed -i "" "/^### Adding Dependency$/,/^### Using Starter$/s;version: $CURRENT_VERSION;version: $NEW_VERSION;" $ROOT_PATH/README.md
 
 echo "Updating Chart.yaml..."
-sed -i"" "s/^version: $CURRENT_VERSION$/version: $NEW_VERSION/" $ROOT_PATH/Chart.yaml
+sed -i "" "s/^version: $CURRENT_VERSION$/version: $NEW_VERSION/" $ROOT_PATH/Chart.yaml
