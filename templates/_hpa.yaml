@@ -3,9 +3,9 @@
 {{- define "common.hpa.tpl" -}}
 {{- $top := first . }}
 {{- $autoscaling := index . 1 }}
-{{- if semverCompare ">=1.23.0" $top.Capabilities.KubeVersion.Version }}
+{{- if semverCompare ">=1.23-0" $top.Capabilities.KubeVersion.GitVersion -}}
 apiVersion: autoscaling/v2
-{{- else }}
+{{- else -}}
 apiVersion: autoscaling/v2beta2
 {{- end }}
 kind: HorizontalPodAutoscaler
