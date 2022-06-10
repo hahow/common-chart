@@ -3,11 +3,11 @@
 {{- define "common.pdb.tpl" -}}
 {{- $top := first . }}
 {{- $pdb := index . 1 }}
-{{- if semverCompare ">=1.21.0" $top.Capabilities.KubeVersion.Version -}}
+{{- if semverCompare ">=1.21.0" $top.Capabilities.KubeVersion.Version }}
 apiVersion: policy/v1
-{{- else -}}
+{{- else }}
 apiVersion: policy/v1beta1
-{{- end -}}
+{{- end }}
 kind: PodDisruptionBudget
 metadata:
   {{- include "common.metadata" (list $top) | nindent 2 }}
