@@ -10,7 +10,11 @@ spec:
 {{- $cronJob := index . 1 }}
 {{- $pod := index . 2 }}
 {{- $serviceAccount := index . 3 }}
+{{- if semverCompare ">=1.21.0" .Capabilities.KubeVersion.Version -}}
+apiVersion: batch/v1
+{{- else -}}
 apiVersion: batch/v1beta1
+{{- end -}}
 kind: CronJob
 metadata:
   {{- include "common.metadata" (list $top) | nindent 2 }}
