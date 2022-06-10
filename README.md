@@ -337,7 +337,8 @@ ingress:
   hosts:
   - host: chart-example.local
     paths:
-    - /path/to/somewhere
+    - path: /path/to/somewhere
+      pathType: ImplementationSpecific
   tls:
   - secretName: chart-example-tls
     hosts:
@@ -380,9 +381,12 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: release-name-mychart
-          servicePort: 80
+          service:
+            name: release-name-mychart
+            port: 
+              number: 80
         path: /path/to/somewhere
+        pathType: ImplementationSpecific
   tls:
   - hosts:
     - "chart-example.local"

@@ -3,9 +3,9 @@
 {{- define "common.pdb.tpl" -}}
 {{- $top := first . }}
 {{- $pdb := index . 1 }}
-{{- if semverCompare ">=1.21.0" $top.Capabilities.KubeVersion.Version }}
+{{- if semverCompare ">=1.21-0" $top.Capabilities.KubeVersion.GitVersion -}}
 apiVersion: policy/v1
-{{- else }}
+{{- else -}}
 apiVersion: policy/v1beta1
 {{- end }}
 kind: PodDisruptionBudget
