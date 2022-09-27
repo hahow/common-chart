@@ -29,6 +29,9 @@ spec:
   {{- with $cronJob.successfulJobsHistoryLimit }}
   successfulJobsHistoryLimit: {{ . }}
   {{- end }}
+  {{- with $cronJob.suspend }}
+  suspend: {{ . }}
+  {{- end }}
   jobTemplate:
     metadata:
       labels:

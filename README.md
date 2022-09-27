@@ -4,38 +4,34 @@ This chart was originally forked from [`incubator/common`](https://github.com/he
 
 It provides utilities that reflect best practices of Kubernetes chart development, making it faster for you to write charts.
 
-
-
 ## Contents
 
 - [Getting Started](#getting-started)
-  * [Adding Repository](#adding-repository)
-  * [Adding Dependency](#adding-dependency)
-  * [Using Starter](#using-starter)
+  - [Adding Repository](#adding-repository)
+  - [Adding Dependency](#adding-dependency)
+  - [Using Starter](#using-starter)
 - [Resource Kinds](#resource-kinds)
-  * [`common.configMap`](#commonconfigmap)
-  * [`common.cronJob`](#commoncronjob)
-  * [`common.deployment`](#commondeployment)
-  * [`common.hpa`](#commonhpa)
-  * [`common.ingress`](#commoningress)
-  * [`common.pdb`](#commonpdb)
-  * [`common.secret`](#commonsecret)
-  * [`common.service`](#commonservice)
-  * [`common.serviceAccount`](#commonserviceaccount)
-  * [`common.serviceMonitor`](#commonservicemonitor)
-  * [`common.serviceMonitor.secret`](#commonservicemonitorsecret)
+  - [`common.configMap`](#commonconfigmap)
+  - [`common.cronJob`](#commoncronjob)
+  - [`common.deployment`](#commondeployment)
+  - [`common.hpa`](#commonhpa)
+  - [`common.ingress`](#commoningress)
+  - [`common.pdb`](#commonpdb)
+  - [`common.secret`](#commonsecret)
+  - [`common.service`](#commonservice)
+  - [`common.serviceAccount`](#commonserviceaccount)
+  - [`common.serviceMonitor`](#commonservicemonitor)
+  - [`common.serviceMonitor.secret`](#commonservicemonitorsecret)
 - [Partial Objects](#partial-objects)
-  * [`common.chart`](#commonchart)
-  * [`common.container`](#commoncontainer)
-  * [`common.fullname`](#commonfullname)
-  * [`common.labels`](#commonlabels)
-  * [`common.metadata`](#commonmetadata)
-  * [`common.name`](#commonname)
-  * [`common.pod.template`](#commonpodtemplate)
-  * [`common.selectorLabels`](#commonselectorlabels)
-  * [`common.serviceAccountName`](#commonserviceaccountname)
-
-
+  - [`common.chart`](#commonchart)
+  - [`common.container`](#commoncontainer)
+  - [`common.fullname`](#commonfullname)
+  - [`common.labels`](#commonlabels)
+  - [`common.metadata`](#commonmetadata)
+  - [`common.name`](#commonname)
+  - [`common.pod.template`](#commonpodtemplate)
+  - [`common.selectorLabels`](#commonselectorlabels)
+  - [`common.serviceAccountName`](#commonserviceaccountname)
 
 ## Getting Started
 
@@ -84,8 +80,6 @@ $ curl https://raw.githubusercontent.com/hahow/common-chart/master/create.sh | b
 
 Now, there is a chart in `./mychart`. You can edit it and create your own templates.
 
-
-
 ## Resource Kinds
 
 Kubernetes defines a variety of resource kinds, from `Secret` to `StatefulSet`. We define some of the most common kinds in a way that lets you easily work with them.
@@ -121,8 +115,6 @@ A limitation of the Go template library is that a template can only take a singl
 The [`common.service`](#commonservice) template is responsible for rendering the templates with the root context and merging any overrides. As you can see, this makes it very easy to create a basic `Service` resource without having to copy around the standard metadata and labels.
 
 Each implemented base resource is described in greater detail below.
-
-
 
 ### `common.configMap`
 
@@ -167,8 +159,6 @@ metadata:
   name: release-name-mychart
 ```
 
-
-
 ### `common.cronJob`
 
 The `common.cronJob` template accepts a list of five values:
@@ -186,28 +176,29 @@ It defines a basic `CronJob` with the following defaults:
 
 In addition, it uses the following configuration from the `$cronJob`:
 
-| Value | Description |
-| ----- | ----------- |
-| `$cronJob.schedule` | Schedule for the cronjob |
-| `$cronJob.concurrencyPolicy` | [optional] `Allow\|Forbid\|Replace` concurrent jobs |
-| `$cronJob.failedJobsHistoryLimit` | [optional] Specify the number of failed jobs to keep |
+| Value                                 | Description                                             |
+| ------------------------------------- | ------------------------------------------------------- |
+| `$cronJob.schedule`                   | Schedule for the cronjob                                |
+| `$cronJob.concurrencyPolicy`          | [optional] `Allow\|Forbid\|Replace` concurrent jobs     |
+| `$cronJob.failedJobsHistoryLimit`     | [optional] Specify the number of failed jobs to keep    |
 | `$cronJob.successfulJobsHistoryLimit` | [optional] Specify the number of completed jobs to keep |
+| `$cronJob.suspend`                    | [optional] Specify cronjob is suspend, default false    |
 
 Underneath the hood, it invokes [`common.pod.template`](#commonpodtemplate) template with `$pod` to populate the `PodTemplate`.
 
 Example use:
 
 ```yaml
-{{- include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount) }}
-
+{
+  {
+    - include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount),
+  },
+}
 ## The following is the same as above:
 # {{- include "common.cronJob" (list . .Values.cronJob .Values .Values.serviceAccount "mychart.cronJob") }}
 # {{- define "mychart.cronJob" -}}
 # {{- end }}
 ```
-
-
-
 
 ### `common.deployment`
 
@@ -221,30 +212,31 @@ The `common.deployment` template accepts a list of five values:
 
 It defines a basic `Deployment` with the following settings:
 
-| Value | Description |
-| ----- | ----------- |
-| `$deployment.replicaCount` | Number of replica. If autoscaling enabled, this field will be ignored |
-| `$deployment.imagePullSecrets` | [optional] Name of Secret resource containing private registry credentials |
-| `$deployment.podSecurityContext` | [optional] Security options for pod |
-| `$deployment.nodeSelector` | [optional] Node labels for pod assignment |
-| `$deployment.affinity` | [optional] Expressions for affinity |
-| `$deployment.tolerations` | [optional] Toleration labels for pod assignment |
-| `$autoscaling.enabled` | [optional] Set this to `true` to enable autoscaling |
+| Value                            | Description                                                                |
+| -------------------------------- | -------------------------------------------------------------------------- |
+| `$deployment.replicaCount`       | Number of replica. If autoscaling enabled, this field will be ignored      |
+| `$deployment.imagePullSecrets`   | [optional] Name of Secret resource containing private registry credentials |
+| `$deployment.podSecurityContext` | [optional] Security options for pod                                        |
+| `$deployment.nodeSelector`       | [optional] Node labels for pod assignment                                  |
+| `$deployment.affinity`           | [optional] Expressions for affinity                                        |
+| `$deployment.tolerations`        | [optional] Toleration labels for pod assignment                            |
+| `$autoscaling.enabled`           | [optional] Set this to `true` to enable autoscaling                        |
 
 Underneath the hood, it invokes [`common.pod.template`](#commonpodtemplate) template with `$deployment` to populate the `PodTemplate`.
 
 Example use:
 
 ```yaml
-{{- include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount) }}
-
+{
+  {
+    - include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount),
+  },
+}
 ## The following is the same as above:
 # {{- include "common.deployment" (list . .Values .Values.autoscaling .Values.serviceAccount "mychart.deployment") }}
 # {{- define "mychart.deployment" -}}
 # {{- end }}
 ```
-
-
 
 ### `common.hpa`
 
@@ -272,8 +264,7 @@ autoscaling:
 Example use:
 
 ```yaml
-{{- include "common.hpa" (list . .Values.autoscaling) }}
-
+{ { - include "common.hpa" (list . .Values.autoscaling) } }
 ## The following is the same as above:
 # {{- include "common.hpa" (list . .Values.autoscaling "mychart.hpa") }}
 # {{- define "mychart.hpa" -}}
@@ -296,26 +287,24 @@ metadata:
 spec:
   maxReplicas: 5
   metrics:
-  - resource:
-      name: cpu
-      target:
-        averageUtilization: 50
-        type: Utilization
-    type: Resource
-  - resource:
-      name: memory
-      target:
-        averageUtilization: 90
-        type: Utilization
-    type: Resource
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 50
+          type: Utilization
+      type: Resource
+    - resource:
+        name: memory
+        target:
+          averageUtilization: 90
+          type: Utilization
+      type: Resource
   minReplicas: 3
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: release-name-mychart
 ```
-
-
 
 ### `common.ingress`
 
@@ -335,14 +324,14 @@ ingress:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
   hosts:
-  - host: chart-example.local
-    paths:
-    - path: /path/to/somewhere
-      pathType: ImplementationSpecific
+    - host: chart-example.local
+      paths:
+        - path: /path/to/somewhere
+          pathType: ImplementationSpecific
   tls:
-  - secretName: chart-example-tls
-    hosts:
-    - chart-example.local
+    - secretName: chart-example-tls
+      hosts:
+        - chart-example.local
 service:
   type: ClusterIP
   port: 80
@@ -351,8 +340,7 @@ service:
 Example use:
 
 ```yaml
-{{- include "common.ingress" (list . .Values.ingress .Values.service) }}
-
+{ { - include "common.ingress" (list . .Values.ingress .Values.service) } }
 ## The following is the same as above:
 # {{- include "common.ingress" (list . .Values.ingress .Values.service "mychart.ingress") }}
 # {{- define "mychart.ingress" -}}
@@ -377,23 +365,21 @@ metadata:
   name: release-name-mychart
 spec:
   rules:
-  - host: "chart-example.local"
-    http:
-      paths:
-      - backend:
-          service:
-            name: release-name-mychart
-            port: 
-              number: 80
-        path: /path/to/somewhere
-        pathType: ImplementationSpecific
+    - host: "chart-example.local"
+      http:
+        paths:
+          - backend:
+              service:
+                name: release-name-mychart
+                port:
+                  number: 80
+            path: /path/to/somewhere
+            pathType: ImplementationSpecific
   tls:
-  - hosts:
-    - "chart-example.local"
-    secretName: chart-example-tls
+    - hosts:
+        - "chart-example.local"
+      secretName: chart-example-tls
 ```
-
-
 
 ### `common.pdb`
 
@@ -421,8 +407,11 @@ podDisruptionBudget:
 Example use:
 
 ```yaml
-{{- include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling) }}
-
+{
+  {
+    - include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling),
+  },
+}
 ## The following is the same as above:
 # {{- include "common.pdb" (list . .Values.podDisruptionBudget .Values .Values.autoscaling "mychart.pdb") }}
 # {{- define "mychart.pdb" -}}
@@ -449,8 +438,6 @@ spec:
       app.kubernetes.io/instance: release-name
       app.kubernetes.io/name: mychart
 ```
-
-
 
 ### `common.secret`
 
@@ -495,8 +482,6 @@ metadata:
   name: release-name-mychart
 type: Opaque
 ```
-
-
 
 ### `common.service`
 
@@ -569,9 +554,9 @@ metadata:
   name: release-name-mychart-www
 spec:
   ports:
-  - name: www
-    port: 80
-    targetPort: 8080
+    - name: www
+      port: 80
+      targetPort: 8080
   selector:
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/name: mychart
@@ -590,20 +575,18 @@ metadata:
   name: release-name-mychart-mail
 spec:
   ports:
-  - name: smtp
-    port: 25
-    targetPort: 25
-  - name: imaps
-    port: 993
-    targetPort: 993
+    - name: smtp
+      port: 25
+      targetPort: 25
+    - name: imaps
+      port: 993
+      targetPort: 993
   selector:
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/name: mychart
     protocol: mail
   type: ClusterIP
 ```
-
-
 
 ### `common.serviceAccount`
 
@@ -630,8 +613,7 @@ serviceAccount:
 Example use:
 
 ```yaml
-{{- include "common.serviceAccount" (list . .Values.serviceAccount) }}
-
+{ { - include "common.serviceAccount" (list . .Values.serviceAccount) } }
 ## The following is the same as above:
 # {{- include "common.serviceAccount" (list . .Values.serviceAccount "mychart.serviceAccount") }}
 # {{- define "mychart.serviceAccount" -}}
@@ -652,8 +634,6 @@ metadata:
     helm.sh/chart: mychart-0.1.0
   name: release-name-mychart
 ```
-
-
 
 ### `common.serviceMonitor`
 
@@ -687,8 +667,7 @@ serviceMonitor:
 Example use:
 
 ```yaml
-{{- include "common.serviceMonitor" (list . .Values.serviceMonitor) }}
-
+{ { - include "common.serviceMonitor" (list . .Values.serviceMonitor) } }
 ## The following is the same as above:
 # {{- include "common.serviceMonitor" (list . .Values.serviceMonitor "mychart.serviceMonitor") }}
 # {{- define "mychart.serviceMonitor" -}}
@@ -711,27 +690,25 @@ metadata:
   namespace: monitoring
 spec:
   endpoints:
-  - basicAuth:
-      password:
-        key: password
-        name: release-name-mychart
-      username:
-        key: username
-        name: release-name-mychart
-    interval: 30s
-    path: /path/to/metrics
-    port: 80
-    scrapeTimeout: 30s
+    - basicAuth:
+        password:
+          key: password
+          name: release-name-mychart
+        username:
+          key: username
+          name: release-name-mychart
+      interval: 30s
+      path: /path/to/metrics
+      port: 80
+      scrapeTimeout: 30s
   namespaceSelector:
     matchNames:
-    - default
+      - default
   selector:
     matchLabels:
       app.kubernetes.io/instance: release-name
       app.kubernetes.io/name: mychart
 ```
-
-
 
 ### `common.serviceMonitor.secret`
 
@@ -756,8 +733,7 @@ serviceMonitor:
 Example use:
 
 ```yaml
-{{- include "common.serviceMonitor.secret" (list . .Values.serviceMonitor) }}
-
+{ { - include "common.serviceMonitor.secret" (list . .Values.serviceMonitor) } }
 ## The following is the same as above:
 # {{- include "common.serviceMonitor.secret" (list . .Values.serviceMonitor "mychart.serviceMonitor.secret") }}
 # {{- define "mychart.serviceMonitor.secret" -}}
@@ -784,13 +760,9 @@ metadata:
 type: Opaque
 ```
 
-
-
 ## Partial Objects
 
 When writing Kubernetes resources, you may find the following helpers useful to construct parts of the spec.
-
-
 
 ### `common.chart`
 
@@ -799,7 +771,7 @@ The `common.chart` helper prints the chart name and version, escaped to be legal
 Example template:
 
 ```yaml
-helm.sh/chart: {{ include "common.chart" . }}
+helm.sh/chart: { { include "common.chart" . } }
 ```
 
 For the chart `foo` with version `1.2.3-beta.55+1234`, this will render:
@@ -809,8 +781,6 @@ helm.sh/chart: foo-1.2.3-beta.55_1234
 ```
 
 (Note that `+` is an illegal character in label values)
-
-
 
 ### `common.container`
 
@@ -877,7 +847,7 @@ image:
 securityContext:
   capabilities:
     drop:
-    - ALL
+      - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
@@ -916,46 +886,44 @@ spec:
         app.kubernetes.io/name: mychart
     spec:
       containers:
-      - image: nginx:stable
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        name: mychart
-        ports:
-        - containerPort: 80
-          name: http
-          protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
-        resources:
-          limits:
-            cpu: 100m
-            memory: 128Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-        securityContext:
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 1000
+        - image: nginx:stable
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          name: mychart
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
       serviceAccountName: release-name-mychart
 ```
-
-
 
 ### `common.fullname`
 
 The `common.fullname` template generates a name suitable for the `name:` field in Kubernetes metadata. It is used like this:
 
 ```yaml
-name: {{ include "common.fullname" . }}
+name: { { include "common.fullname" . } }
 ```
 
 This prints the value of `{{ .Release.Name }}-{{ .Chart.Name }}` by default, but can be overridden with `.Values. fullnameOverride`:
@@ -978,8 +946,6 @@ name: release-name-mychart
 
 Output of this function is truncated at 63 characters, which is the maximum length of name.
 
-
-
 ### `common.labels`
 
 `common.selectorLabels` prints the standard set of labels.
@@ -1000,8 +966,6 @@ app.kubernetes.io/version: 1.16.0
 helm.sh/chart: mychart-0.1.0
 ```
 
-
-
 ### `common.metadata`
 
 The `common.metadata` helper generates value for the `metadata:` section of a Kubernetes resource.
@@ -1016,9 +980,7 @@ It generates standard labels and a name field.
 Example template:
 
 ```yaml
-metadata:
-  {{- include "common.metadata" (list .) | nindent 2 }}
-
+metadata: { { - include "common.metadata" (list .) | nindent 2 } }
 ## The following is the same as above:
 # metadata:
 #   {{- include "common.metadata" (list . "mychart.metadata") | nindent 2 }}
@@ -1041,14 +1003,12 @@ metadata:
 
 Most of the common templates that define a resource type (e.g. `common.configMap` or `common.cronJob`) use this to generate the metadata, which means they inherit the same `labels` and `name` fields.
 
-
-
 ### `common.name`
 
 The `common.name` template generates a name suitable for the `app.kubernetes.io/name` label. It is used like this:
 
 ```yaml
-app.kubernetes.io/name: {{ include "common.name" . }}
+app.kubernetes.io/name: { { include "common.name" . } }
 ```
 
 This prints the value of `{{ .Chart.Name }}` by default, but can be overridden with `.Values.nameOverride`:
@@ -1071,7 +1031,6 @@ app.kubernetes.io/name: mychart
 
 Output of this function is truncated at 63 characters, which is the maximum length of name.
 
-
 ### `common.pod.template`
 
 The `common.pod.template` template accepts a list of four values:
@@ -1088,18 +1047,16 @@ It creates a basic `PodTemplate` spec to be used within a `Deployment` or `CronJ
 
 It also uses the following configuration from the `$pod`:
 
-| Value | Description |
-| ----- | ----------- |
-| `$pod.imagePullSecrets` | Names of secrets containing private registry credentials |
-| `$pod.podAnnotations` | Pod annotations |
-| `$pod.podSecurityContext` | Security options |
-| `$pod.nodeSelector ` | Node labels for pod assignment |
-| `$pod.affinity ` | Expressions for affinity |
-| `$pod.tolerations ` | Toleration labels for pod assignment |
+| Value                     | Description                                              |
+| ------------------------- | -------------------------------------------------------- |
+| `$pod.imagePullSecrets`   | Names of secrets containing private registry credentials |
+| `$pod.podAnnotations`     | Pod annotations                                          |
+| `$pod.podSecurityContext` | Security options                                         |
+| `$pod.nodeSelector `      | Node labels for pod assignment                           |
+| `$pod.affinity `          | Expressions for affinity                                 |
+| `$pod.tolerations `       | Toleration labels for pod assignment                     |
 
 Underneath the hood, it invokes [`common.container`](#commoncontainer) template with `$pod` to populate the `PodSpec`'s container list.
-
-
 
 ### `common.selectorLabels`
 
@@ -1117,8 +1074,6 @@ Example output:
 app.kubernetes.io/instance: release-name
 app.kubernetes.io/name: mychart
 ```
-
-
 
 ### `common.serviceAccountName`
 
