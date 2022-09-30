@@ -183,6 +183,7 @@ In addition, it uses the following configuration from the `$cronJob`:
 | `$cronJob.failedJobsHistoryLimit`     | [optional] Specify the number of failed jobs to keep    |
 | `$cronJob.successfulJobsHistoryLimit` | [optional] Specify the number of completed jobs to keep |
 | `$cronJob.suspend`                    | [optional] Specify cronjob is suspend, default false    |
+| `$cronJob.activeDeadlineSeconds`      | [optional] Specify cronjob activeDeadlineSeconds        |
 
 Underneath the hood, it invokes [`common.pod.template`](#commonpodtemplate) template with `$pod` to populate the `PodTemplate`.
 

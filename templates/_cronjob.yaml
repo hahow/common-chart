@@ -37,6 +37,9 @@ spec:
       labels:
         {{- include "common.selectorLabels" $top | nindent 8 }}
     spec:
+      {{- with $cronJob.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ . }}
+      {{- end }}
       template:
         {{- include "common.pod.template" (list $top $pod $serviceAccount "common.cronJob.pod") | nindent 8 }}
 {{- end }}
