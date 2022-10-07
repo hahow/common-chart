@@ -1056,6 +1056,7 @@ It also uses the following configuration from the `$pod`:
 | `$pod.nodeSelector `      | Node labels for pod assignment                           |
 | `$pod.affinity `          | Expressions for affinity                                 |
 | `$pod.tolerations `       | Toleration labels for pod assignment                     |
+| `$pod.podLabels`          | Pod extra labels                                         |
 
 Underneath the hood, it invokes [`common.container`](#commoncontainer) template with `$pod` to populate the `PodSpec`'s container list.
 

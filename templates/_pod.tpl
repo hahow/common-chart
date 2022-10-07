@@ -11,6 +11,9 @@ metadata:
   {{- end }}
   labels:
     {{- include "common.selectorLabels" $top | nindent 4 }}
+  {{- with $pod.podLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   {{- with $pod.imagePullSecrets }}
   imagePullSecrets:
