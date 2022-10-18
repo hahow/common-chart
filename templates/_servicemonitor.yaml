@@ -22,7 +22,7 @@ spec:
     matchNames:
     - {{ $top.Release.Namespace | quote }}
   endpoints:
-  - port: {{ $serviceMonitor.port }}
+  - port: "{{ $serviceMonitor.port }}"
     {{- with $serviceMonitor.path }}
     path: {{ . }}
     {{- end }}
