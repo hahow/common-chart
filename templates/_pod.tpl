@@ -36,6 +36,9 @@ spec:
   tolerations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with $pod.priorityClassName }}
+  priorityClassName: {{ . }}
+  {{- end }}
 {{- end }}
 
 {{- define "common.pod.template" -}}
