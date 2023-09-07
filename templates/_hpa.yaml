@@ -6,7 +6,7 @@
 {{- if semverCompare ">=1.23-0" $top.Capabilities.KubeVersion.GitVersion -}}
 apiVersion: autoscaling/v2
 {{- else -}}
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 {{- end }}
 kind: HorizontalPodAutoscaler
 metadata:
